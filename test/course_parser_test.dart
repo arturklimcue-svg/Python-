@@ -58,6 +58,35 @@ void main() {
     expect(tasks, greaterThan(50));
   });
 
+  test('fill принимает и полную строку, и только пропуск', () {
+    const task = Task(
+      type: TaskType.fill,
+      question: 'q',
+      fillBefore: '',
+      fillAfter: '("Меня зовут Ботти!")',
+      answers: ['print'],
+    );
+    expect(task.checkAnswer('print'), isTrue);
+    expect(task.checkAnswer('print("Меня зовут Ботти!")'), isTrue);
+    expect(task.checkAnswer("print('Меня зовут Ботти!')"), isTrue);
+    expect(task.checkAnswer('print(1)'), isFalse);
+    expect(task.checkAnswer('  PRINT("Меня зовут Ботти!") '), isTrue);
+  });
+
+  test('fill с синтаксисом x = ___ печатает то же самое', () {
+    const task = Task(
+      type: TaskType.fill,
+      question: 'q',
+      fillBefore: 'x = ',
+      fillAfter: '',
+      answers: ['42'],
+    );
+    expect(task.checkAnswer('42'), isTrue);
+    expect(task.checkAnswer('x = 42'), isTrue);
+    expect(task.checkAnswer('x= 42'), isTrue);
+    expect(task.checkAnswer('43'), isFalse);
+  });
+
   test('parse вручную собранного JSON', () {
     const json = '''
     {"title":"T","modules":[

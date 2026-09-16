@@ -49,7 +49,7 @@ class _LessonScreenState extends State<LessonScreen> {
   }
 
   void _checkAnswer() {
-    if (_submitted && _isCorrect) return;
+    if (_submitted) return;
     final task = _exercise.task;
     bool correct;
     switch (task!.type) {
@@ -71,26 +71,36 @@ class _LessonScreenState extends State<LessonScreen> {
     });
   }
 
-  bool _retryable() =>
-      _exercise.hasTask && _exercise.task!.type == TaskType.fill;
+  void _retry() {
+    setState(() {
+      _submitted = false;
+      _isCorrect = false;
+      _selected = {};
+      _tfAnswer = null;
+      _fillCtrl.clear();
+    });
+  }
 
   bool _canCheck() {
-    if (!_exercise.hasTask) return false;
-    if (_submitted && _isCorrect) return false;
-    if (_submitted && !_retryable()) return false;
-    switch (_exercise.task!.type) {
+    if (!_exercise.hasTask || _submitted) return false;
+    final task = _exercise.task!;
+    switch (task.type) {
       case TaskType.single:
       case TaskType.codeOutput:
         return _selected.length == 1;
       case TaskType.multi:
         return _selected.isNotEmpty;
       case TaskType.trueFalse:
+        return _tfAnswer != null;
       case TaskType.fill:
-        return true;
+        return _fillCtrl.text.trim().isNotEmpty;
     }
   }
 
   void _next() {
+    if (!_exercise.hasTask) {
+      widget.progress.advanceLesson(widget.lesson.id, _index);
+    }
     final lastExercise = _index == widget.lesson.exerciseCount - 1;
     if (!lastExercise) {
       setState(() {
@@ -220,9 +230,9 @@ class _LessonScreenState extends State<LessonScreen> {
                       canCheck: _canCheck(),
                       submitted: _submitted,
                       isCorrect: _isCorrect,
-                      retryable: _retryable(),
                       onCheck: _checkAnswer,
                       onNext: _next,
+                      onRetry: _retry,
                     ),
                   ],
                 ),
@@ -547,18 +557,18 @@ class _BottomButtons extends StatelessWidget {
   final bool canCheck;
   final bool submitted;
   final bool isCorrect;
-  final bool retryable;
   final VoidCallback onCheck;
   final VoidCallback onNext;
+  final VoidCallback onRetry;
 
   const _BottomButtons({
     required this.hasTask,
     required this.canCheck,
     required this.submitted,
     required this.isCorrect,
-    required this.retryable,
     required this.onCheck,
     required this.onNext,
+    required this.onRetry,
   });
 
   @override
@@ -566,17 +576,14 @@ class _BottomButtons extends StatelessWidget {
     if (!hasTask) {
       return FilledButton(onPressed: onNext, child: const Text('Далее'));
     }
-    if (submitted && !isCorrect && retryable) {
+    if (submitted && !isCorrect) {
       return FilledButton(
-        onPressed: canCheck ? onCheck : null,
-        child: const Text('Проверить ещё раз'),
+        onPressed: onRetry,
+        child: const Text('Попробовать ещё раз'),
       );
     }
     if (submitted) {
-      return FilledButton(
-        onPressed: onNext,
-        child: Text(isCorrect ? 'Далее' : 'Продолжить'),
-      );
+      return FilledButton(onPressed: onNext, child: const Text('Далее'));
     }
     return FilledButton(
       onPressed: canCheck ? onCheck : null,

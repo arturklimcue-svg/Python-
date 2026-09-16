@@ -49,6 +49,106 @@ void main() {
     expect(p.xp, 4);
   });
 
+  testWidgets('экран урока: ошибка не пропускает упражнение', (tester) async {
+    const lesson = Lesson(
+      id: 'm1-l2',
+      title: 'Тест 2',
+      isPractice: false,
+      xp: 15,
+      exercises: [
+        Exercise(
+          kind: ExerciseKind.theoryTask,
+          text: 'Вопрос',
+          task: Task(
+            type: TaskType.single,
+            question: 'Что верно?',
+            options: ['а', 'б'],
+            correct: [1],
+            explanation: 'Потому что б',
+          ),
+        ),
+        Exercise(
+          kind: ExerciseKind.theoryTask,
+          text: 'Следующее',
+          task: Task(
+            type: TaskType.single,
+            question: 'Дальше?',
+            options: ['да', 'нет'],
+            correct: [0],
+          ),
+        ),
+      ],
+    );
+    final p = _progress();
+    await p.load();
+
+    await tester.pumpWidget(
+      MaterialApp(home: LessonScreen(lesson: lesson, progress: p)),
+    );
+    expect(find.text('Что верно?'), findsOneWidget);
+
+    await tester.tap(find.text('а'));
+    await tester.pump();
+    await tester.tap(find.text('Проверить'));
+    await tester.pump();
+
+    expect(find.text('Не совсем'), findsOneWidget);
+    expect(find.text('Попробовать ещё раз'), findsOneWidget);
+    expect(find.text('Продолжить'), findsNothing);
+    expect(p.lessonProgressOf('m1-l2')!.last, 0,
+        reason: 'неправильный ответ не двигает позицию');
+
+    await tester.tap(find.text('Попробовать ещё раз'));
+    await tester.pump();
+    await tester.tap(find.text('б'));
+    await tester.pump();
+    await tester.tap(find.text('Проверить'));
+    await tester.pump();
+
+    expect(find.text('Верно!'), findsOneWidget);
+    await tester.tap(find.text('Далее'));
+    await tester.pumpAndSettle();
+    expect(find.text('Следующее'), findsOneWidget);
+    expect(p.xp, 4);
+  });
+
+  testWidgets('fill: принимается и полная строка с ответом', (tester) async {
+    const lesson = Lesson(
+      id: 'm1-l3',
+      title: 'Fill',
+      isPractice: false,
+      xp: 15,
+      exercises: [
+        Exercise(
+          kind: ExerciseKind.theoryTask,
+          text: 'Вставь команду',
+          task: Task(
+            type: TaskType.fill,
+            question: 'Бот говорит «Меня зовут Ботти!»',
+            fillBefore: '',
+            fillAfter: '("Меня зовут Ботти!")',
+            answers: ['print'],
+          ),
+        ),
+      ],
+    );
+    final p = _progress();
+    await p.load();
+
+    await tester.pumpWidget(
+      MaterialApp(home: LessonScreen(lesson: lesson, progress: p)),
+    );
+
+    await tester.enterText(
+        find.byType(TextField), 'print("Меня зовут Ботти!")');
+    await tester.pump();
+    await tester.tap(find.text('Проверить'));
+    await tester.pump();
+
+    expect(find.text('Верно!'), findsOneWidget);
+    expect(p.xp, 4);
+  });
+
   testWidgets('онбординг: ввод имени открывает курс', (tester) async {
     const course = Course(
       title: 'Py',

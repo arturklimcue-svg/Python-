@@ -65,7 +65,7 @@ class Achievement {
 }
 
 class ProgressService extends ChangeNotifier {
-  static const _key = 'kodik_progress_v1';
+  static const _key = 'kodik_progress_v2';
 
   final Storage _storage;
 
@@ -164,13 +164,22 @@ class ProgressService extends ChangeNotifier {
       newXp += 4;
       newCoins += 1;
     }
-    final last = p.last < exerciseIndex + 1 ? exerciseIndex + 1 : p.last;
+    var last = p.last;
+    if (isCorrect && last < exerciseIndex + 1) last = exerciseIndex + 1;
     _lessons[lessonId] = p.copyWith(
         last: last, right: newRight, awarded: awarded);
     xp = newXp;
     coins = newCoins;
     notifyListeners();
     await save();
+  }
+
+  Future<void> advanceLesson(String lessonId, int exerciseIndex) async {
+    final p = _lessons[lessonId] ?? LessonProgress.empty();
+    if (p.last < exerciseIndex + 1) {
+      _lessons[lessonId] = p.copyWith(last: exerciseIndex + 1);
+      await save();
+    }
   }
 
   Future<void> completeLesson(String lessonId, int xpBonus, int coinBonus) async {

@@ -61,13 +61,26 @@ void main() {
     expect(p.xp, 4);
   });
 
-  test('ошибочный ответ не даёт XP, но двигает прогресс', () async {
+  test('ошибочный ответ не даёт XP и не двигает прогресс', () async {
     final p = ProgressService(MemoryStorage());
     await p.load();
     await p.recordExercise('m1-l1', 0, false);
     expect(p.xp, 0);
     final lp = p.lessonProgressOf('m1-l1')!;
-    expect(lp.last, 1);
+    expect(lp.last, 0, reason: 'ошибка не должна сдвигать позицию урока');
+    expect(lp.awarded, isEmpty);
+  });
+
+  test('правильный ответ двигает прогресс; теория тоже', () async {
+    final p = ProgressService(MemoryStorage());
+    await p.load();
+    await p.recordExercise('m1-l1', 0, false);
+    expect(p.lessonProgressOf('m1-l1')!.last, 0);
+    await p.recordExercise('m1-l1', 0, true);
+    expect(p.lessonProgressOf('m1-l1')!.last, 1);
+    await p.advanceLesson('m1-l1', 1);
+    expect(p.lessonProgressOf('m1-l1')!.last, 2);
+    expect(p.lessonProgressOf('m1-l1')!.right, 1);
   });
 
   test('завершение урока начисляет XP один раз', () async {

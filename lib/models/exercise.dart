@@ -89,14 +89,20 @@ class Task {
 
   bool _checkFill(dynamic answer) {
     if (answer is! String || answers.isEmpty) return false;
-    var a = answer.trim();
-    if (caseInsensitive) a = a.toLowerCase();
+    final a = _norm(answer.trim());
     for (final expected in answers) {
-      var e = expected.trim();
-      if (caseInsensitive) e = e.toLowerCase();
+      final e = _norm(expected.trim());
       if (a == e) return true;
+      final full = _norm('$fillBefore$e$fillAfter');
+      if (full.isNotEmpty && a == full) return true;
     }
     return false;
+  }
+
+  String _norm(String s) {
+    var out = s.replaceAll(RegExp(r'\s+'), ' ');
+    if (caseInsensitive) out = out.toLowerCase();
+    return out;
   }
 }
 

@@ -5477,7 +5477,7 @@
         "question": "Что выведет код?\ndef tip(bill, percent=10):\n    return bill * percent / 100\n\nprint(tip(1000))",
         "explanation": "percent по умолчанию = 10, поэтому чаевые = 1000 * 10 / 100 = 100.",
         "options": [
-         "100",
+         "100.0",
          "1000",
          "10",
          "Ошибка"
@@ -5559,7 +5559,7 @@
         "question": "Что вернёт lambda-выражение?\ndiscount = lambda price: price * 0.9\nprint(discount(100))",
         "explanation": "100 * 0.9 = 90.",
         "options": [
-         "90",
+         "90.0",
          "100",
          "0.9",
          "9"
@@ -6508,7 +6508,7 @@
         "question": "Что выведет код?\nd = {\"J\": 2, \"Q\": 3}\nfor k, v in d.items():\n    print(k, v)",
         "explanation": "items() даёт пары (ключ, значение), печатаются: \"J 2\" и \"Q 3\".",
         "options": [
-         "J 2, Q 3",
+         "J 2\nQ 3",
          "JQ23",
          "2 3",
          "Ошибка"
@@ -8113,7 +8113,7 @@
         "type": "code_output",
         "question": "Что выведет этот код?",
         "options": [
-         "['Лев', 'Ан', 'Пётр']",
+         "['Ан', 'Лев', 'Пётр']",
          "['Ан', 'Пётр', 'Лев']",
          "['Пётр', 'Ан', 'Лев']"
         ],
