@@ -22,7 +22,7 @@ class LessonScreen extends StatefulWidget {
 
 class _LessonScreenState extends State<LessonScreen> {
   late int _index;
-  late bool _submitted;
+  bool _submitted = false;
   bool _isCorrect = false;
   Set<int> _selected = {};
   bool? _tfAnswer;
@@ -46,16 +46,6 @@ class _LessonScreenState extends State<LessonScreen> {
   void dispose() {
     _fillCtrl.dispose();
     super.dispose();
-  }
-
-  void _resetExercise() {
-    setState(() {
-      _submitted = false;
-      _isCorrect = false;
-      _selected = {};
-      _tfAnswer = null;
-      _fillCtrl.clear();
-    });
   }
 
   void _checkAnswer() {
@@ -177,7 +167,8 @@ class _LessonScreenState extends State<LessonScreen> {
                 const Spacer(),
                 if (widget.lesson.isPractice)
                   Container(
-                    padding: const EdgeInsets.symmetric(h: 10, v: 4),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: AppColors.accent.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(30),

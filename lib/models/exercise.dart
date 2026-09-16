@@ -84,8 +84,6 @@ class Task {
         return correctBool != null && answer == correctBool;
       case TaskType.fill:
         return _checkFill(answer);
-      default:
-        return false;
     }
   }
 

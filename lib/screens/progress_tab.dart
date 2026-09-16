@@ -149,7 +149,7 @@ class ProgressTab extends StatelessWidget {
                   child: Row(
                     children: [
                       Text(
-                        '${m.number.toString().padLeft(2, '0')}',
+                        m.number.toString().padLeft(2, '0'),
                         style: const TextStyle(
                           fontWeight: FontWeight.w800,
                           color: AppColors.primary,

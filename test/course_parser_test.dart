@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kodik/data/course_repository.dart';
-import 'package:kodik/models/course.dart';
 import 'package:kodik/models/exercise.dart';
 
 void main() {

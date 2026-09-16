@@ -26,7 +26,7 @@ List<TextSpan> _highlightLine(String line) {
     if (ch == '"' || ch == "'") {
       String escaped = ch;
       var j = i + 1;
-      final triple = line.startsWith('${ch.toString() * 3}', i);
+      final triple = line.startsWith(ch.toString() * 3, i);
       final delim = triple ? ch.toString() * 3 : ch.toString();
       while (j < line.length) {
         escaped += line[j];
