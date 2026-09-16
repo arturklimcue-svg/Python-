@@ -3,6 +3,8 @@ import 'package:kodik/services/ai_service.dart';
 import 'package:kodik/data/course_repository.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('AiAgent', () {
     test('приветствие работает', () async {
       final agent = AiAgent(currentModule: 1, currentModuleTitle: 'Тест');
