@@ -168,10 +168,10 @@ class _CertificateCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Expanded(
+                const Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
-                    children: const [
+                    children: [
                       Text(
                         'КодиК',
                         style: TextStyle(

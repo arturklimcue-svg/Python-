@@ -197,7 +197,7 @@ class _LessonTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 6),
-              Icon(
+              const Icon(
                 Icons.chevron_right,
                 color: AppColors.textMuted,
               ),

@@ -12,13 +12,13 @@ ProgressService _progress() => ProgressService(MemoryStorage());
 void main() {
   testWidgets('экран урока: правильный выбор показывает «Верно!»',
       (tester) async {
-    final lesson = Lesson(
+    const lesson = Lesson(
       id: 'm1-l1',
       title: 'Тест',
       isPractice: false,
       xp: 15,
       exercises: [
-        const Exercise(
+        Exercise(
           kind: ExerciseKind.theoryTask,
           text: 'Вопрос',
           code: 'print(1)',
@@ -50,7 +50,7 @@ void main() {
   });
 
   testWidgets('онбординг: ввод имени открывает курс', (tester) async {
-    final course = Course(
+    const course = Course(
       title: 'Py',
       modules: [
         CourseModule(
@@ -62,7 +62,7 @@ void main() {
               title: 'Введение',
               isPractice: false,
               xp: 15,
-              exercises: const [
+              exercises: [
                 Exercise(kind: ExerciseKind.theory, text: 'Привет'),
               ],
             ),

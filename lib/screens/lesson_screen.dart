@@ -195,7 +195,7 @@ class _LessonScreenState extends State<LessonScreen> {
                     if (exercise.code != null) CodeBlock(code: exercise.code!),
                     if (exercise.hasTask) ...[
                       const SizedBox(height: 18),
-                      Divider(color: AppColors.background),
+                      const Divider(color: AppColors.background),
                       _TaskPanel(
                         task: exercise.task!,
                         submitted: _submitted,

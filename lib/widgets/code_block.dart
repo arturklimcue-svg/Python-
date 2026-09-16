@@ -18,7 +18,8 @@ List<TextSpan> _highlightLine(String line) {
     if (rest.startsWith('#')) {
       spans.add(TextSpan(
         text: rest,
-        style: TextStyle(color: const Color(0xFF8887A8), fontStyle: FontStyle.italic),
+        style: const TextStyle(
+            color: Color(0xFF8887A8), fontStyle: FontStyle.italic),
       ));
       break;
     }

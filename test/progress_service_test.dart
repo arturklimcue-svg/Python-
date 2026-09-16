@@ -31,7 +31,7 @@ Course _course({int lessons = 2}) {
             ),
         ],
       ),
-      CourseModule(
+      const CourseModule(
         number: 2,
         title: 'M2',
         lessons: [
@@ -40,7 +40,7 @@ Course _course({int lessons = 2}) {
             title: 'L',
             isPractice: false,
             xp: 15,
-            exercises: const [],
+            exercises: [],
           ),
         ],
       ),
