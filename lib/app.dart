@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'models/course.dart';
+import 'screens/ai_chat_screen.dart';
 import 'screens/course_tab.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/profile_tab.dart';
@@ -59,6 +60,29 @@ class HomeShell extends StatefulWidget {
   State<HomeShell> createState() => _HomeShellState();
 }
 
+class _AiAssistantPlaceholder extends StatelessWidget {
+  final Course course;
+  final ProgressService progress;
+  const _AiAssistantPlaceholder(this.course, this.progress);
+
+  @override
+  Widget build(BuildContext context) {
+    int currentModule = 1;
+    String currentTitle = 'Введение в Python';
+    for (final m in course.modules) {
+      if (!progress.isModuleComplete(m)) {
+        currentModule = m.number;
+        currentTitle = m.title;
+        break;
+      }
+    }
+    return AiChatScreen(
+      currentModule: currentModule,
+      currentModuleTitle: currentTitle,
+    );
+  }
+}
+
 class _HomeShellState extends State<HomeShell> {
   int _tab = 0;
 
@@ -67,6 +91,7 @@ class _HomeShellState extends State<HomeShell> {
     final screens = [
       CourseTab(course: widget.course, progress: widget.progress),
       ProgressTab(course: widget.course, progress: widget.progress),
+      _AiAssistantPlaceholder(widget.course, widget.progress),
       ProfileTab(course: widget.course, progress: widget.progress),
     ];
     return Scaffold(
@@ -86,6 +111,11 @@ class _HomeShellState extends State<HomeShell> {
             icon: Icon(Icons.insights_outlined),
             selectedIcon: Icon(Icons.insights),
             label: 'Прогресс',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.smart_toy_outlined),
+            selectedIcon: Icon(Icons.smart_toy),
+            label: 'AI',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),

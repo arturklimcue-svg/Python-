@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/course.dart';
 import '../services/progress_service.dart';
 import '../theme.dart';
+import 'ai_chat_screen.dart';
 import 'lesson_list_screen.dart';
 
 class CourseTab extends StatelessWidget {
@@ -21,7 +22,7 @@ class CourseTab extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
             children: [
-              _GreetingHeader(progress: progress),
+              _GreetingHeader(progress: progress, course: course),
               const SizedBox(height: 16),
               _CourseOverview(course: course, progress: progress),
               const SizedBox(height: 22),
@@ -65,8 +66,9 @@ class CourseTab extends StatelessWidget {
 
 class _GreetingHeader extends StatelessWidget {
   final ProgressService progress;
+  final Course course;
 
-  const _GreetingHeader({required this.progress});
+  const _GreetingHeader({required this.progress, required this.course});
 
   @override
   Widget build(BuildContext context) {
@@ -99,6 +101,8 @@ class _GreetingHeader extends StatelessWidget {
           label: '${progress.streak}',
           color: AppColors.streak,
         ),
+        const SizedBox(width: 8),
+        _AiChatButton(course: course, progress: progress),
       ],
     );
   }
@@ -396,5 +400,44 @@ class _ModuleCard extends StatelessWidget {
       Icons.key,
     ];
     return icons[i % icons.length];
+  }
+}
+
+class _AiChatButton extends StatelessWidget {
+  final Course course;
+  final ProgressService progress;
+  const _AiChatButton({required this.course, required this.progress});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: IconButton(
+        tooltip: 'AI-ассистент',
+        onPressed: () {
+          int currentModule = 1;
+          String currentTitle = 'Введение в Python';
+          for (final m in course.modules) {
+            if (!progress.isModuleComplete(m)) {
+              currentModule = m.number;
+              currentTitle = m.title;
+              break;
+            }
+          }
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => AiChatScreen(
+                currentModule: currentModule,
+                currentModuleTitle: currentTitle,
+              ),
+            ),
+          );
+        },
+        icon: const Icon(Icons.smart_toy_outlined, color: Colors.white, size: 22),
+      ),
+    );
   }
 }

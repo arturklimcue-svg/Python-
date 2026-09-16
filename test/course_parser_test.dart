@@ -8,8 +8,8 @@ void main() {
   test('parse курс из assets', () async {
     final course = await CourseRepository.loadFromAssets();
     expect(course.title, 'Python-разработчик');
-    expect(course.moduleCount, 1);
-    expect(course.totalLessons, 11);
+    expect(course.moduleCount, 9);
+    expect(course.totalLessons, 71);
     final m1 = course.modules.first;
     expect(m1.title, 'Введение в Python');
     expect(m1.lessonCount, 11);
