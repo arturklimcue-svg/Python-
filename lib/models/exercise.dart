@@ -102,7 +102,7 @@ class Task {
   String _norm(String s) {
     var out = s.replaceAll(RegExp(r'\s+'), ' ');
     if (caseInsensitive) out = out.toLowerCase();
-    return out;
+    return out.replaceAll("'", '"');
   }
 }
 

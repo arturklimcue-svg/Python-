@@ -222,6 +222,7 @@ class _LessonScreenState extends State<LessonScreen> {
                           _selected = {i};
                         }),
                         onSelectTf: (v) => setState(() => _tfAnswer = v),
+                        onFillChanged: () => setState(() {}),
                       ),
                     ],
                     const SizedBox(height: 20),
@@ -282,6 +283,7 @@ class _TaskPanel extends StatelessWidget {
   final void Function(int) onSelectSingle;
   final void Function(int) onSelectMulti;
   final void Function(bool) onSelectTf;
+  final VoidCallback onFillChanged;
 
   const _TaskPanel({
     required this.task,
@@ -293,6 +295,7 @@ class _TaskPanel extends StatelessWidget {
     required this.onSelectSingle,
     required this.onSelectMulti,
     required this.onSelectTf,
+    required this.onFillChanged,
   });
 
   @override
@@ -401,6 +404,7 @@ class _TaskPanel extends StatelessWidget {
               child: TextField(
                 controller: fillCtrl,
                 enabled: !submitted || !isCorrect,
+                onChanged: (_) => onFillChanged(),
                 style: const TextStyle(fontFamily: 'monospace', fontSize: 16),
                 decoration: InputDecoration(
                   hintText: 'введи ответ…',

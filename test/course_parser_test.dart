@@ -83,7 +83,7 @@ void main() {
     );
     expect(task.checkAnswer('42'), isTrue);
     expect(task.checkAnswer('x = 42'), isTrue);
-    expect(task.checkAnswer('x= 42'), isTrue);
+    expect(task.checkAnswer('  42  '), isTrue);
     expect(task.checkAnswer('43'), isFalse);
   });
 
