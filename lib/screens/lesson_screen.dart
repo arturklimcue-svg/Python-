@@ -1,0 +1,595 @@
+import 'package:flutter/material.dart';
+
+import '../models/course.dart';
+import '../models/exercise.dart';
+import '../services/progress_service.dart';
+import '../theme.dart';
+import '../widgets/code_block.dart';
+
+class LessonScreen extends StatefulWidget {
+  final Lesson lesson;
+  final ProgressService progress;
+
+  const LessonScreen({
+    super.key,
+    required this.lesson,
+    required this.progress,
+  });
+
+  @override
+  State<LessonScreen> createState() => _LessonScreenState();
+}
+
+class _LessonScreenState extends State<LessonScreen> {
+  late int _index;
+  late bool _submitted;
+  bool _isCorrect = false;
+  Set<int> _selected = {};
+  bool? _tfAnswer;
+  late TextEditingController _fillCtrl;
+  int _rightCount = 0;
+  bool _finished = false;
+
+  Exercise get _exercise => widget.lesson.exercises[_index];
+
+  @override
+  void initState() {
+    super.initState();
+    final lp = widget.progress.lessonProgressOf(widget.lesson.id);
+    _index = (lp?.last ?? 0)
+        .clamp(0, widget.lesson.exerciseCount - 1)
+        .toInt();
+    _fillCtrl = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _fillCtrl.dispose();
+    super.dispose();
+  }
+
+  void _resetExercise() {
+    setState(() {
+      _submitted = false;
+      _isCorrect = false;
+      _selected = {};
+      _tfAnswer = null;
+      _fillCtrl.clear();
+    });
+  }
+
+  void _checkAnswer() {
+    if (_submitted && _isCorrect) return;
+    final task = _exercise.task;
+    bool correct;
+    switch (task!.type) {
+      case TaskType.single:
+      case TaskType.codeOutput:
+        correct = task.checkAnswer(_selected.length == 1 ? _selected.first : -1);
+      case TaskType.multi:
+        correct = task.checkAnswer(_selected.toList());
+      case TaskType.trueFalse:
+        correct = task.checkAnswer(_tfAnswer);
+      case TaskType.fill:
+        correct = task.checkAnswer(_fillCtrl.text);
+    }
+    widget.progress.recordExercise(widget.lesson.id, _index, correct);
+    setState(() {
+      _submitted = true;
+      _isCorrect = correct;
+      if (correct) _rightCount++;
+    });
+  }
+
+  bool _retryable() =>
+      _exercise.hasTask && _exercise.task!.type == TaskType.fill;
+
+  bool _canCheck() {
+    if (!_exercise.hasTask) return false;
+    if (_submitted && _isCorrect) return false;
+    if (_submitted && !_retryable()) return false;
+    switch (_exercise.task!.type) {
+      case TaskType.single:
+      case TaskType.codeOutput:
+        return _selected.length == 1;
+      case TaskType.multi:
+        return _selected.isNotEmpty;
+      case TaskType.trueFalse:
+      case TaskType.fill:
+        return true;
+    }
+  }
+
+  void _next() {
+    final lastExercise = _index == widget.lesson.exerciseCount - 1;
+    if (!lastExercise) {
+      setState(() {
+        _index++;
+        _submitted = false;
+        _isCorrect = false;
+        _selected = {};
+        _tfAnswer = null;
+        _fillCtrl.clear();
+      });
+      return;
+    }
+    _finish();
+  }
+
+  Future<void> _finish() async {
+    if (!_finished) {
+      _finished = true;
+      await widget.progress
+          .completeLesson(widget.lesson.id, widget.lesson.xp, 5);
+    }
+    if (!mounted) return;
+    final title = widget.lesson.isPractice ? 'Практика завершена' : 'Урок пройден';
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: Text(title),
+        content: Text(
+          'Ты ответил правильно на $_rightCount из '
+          '${widget.lesson.exerciseCount} упражнений.\n'
+          '+${widget.lesson.xp} XP и +5 монет в копилку!',
+        ),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Отлично!'),
+          ),
+        ],
+      ),
+    ).then((_) {
+      if (mounted) Navigator.of(context).pop();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final exercise = _exercise;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.lesson.title),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(4),
+          child: LinearProgressIndicator(
+            value: (_index + 1) / widget.lesson.exerciseCount,
+            backgroundColor: AppColors.primary.withValues(alpha: 0.15),
+            color: AppColors.primary,
+          ),
+        ),
+      ),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+          children: [
+            Row(
+              children: [
+                Text(
+                  'Упражнение ${_index + 1} из ${widget.lesson.exerciseCount}',
+                  style: const TextStyle(
+                    color: AppColors.textMuted,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const Spacer(),
+                if (widget.lesson.isPractice)
+                  Container(
+                    padding: const EdgeInsets.symmetric(h: 10, v: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.accent.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: const Text(
+                      'Практика',
+                      style: TextStyle(
+                        color: AppColors.accent,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _RichText(exercise.text),
+                    if (exercise.code != null) CodeBlock(code: exercise.code!),
+                    if (exercise.hasTask) ...[
+                      const SizedBox(height: 18),
+                      Divider(color: AppColors.background),
+                      _TaskPanel(
+                        task: exercise.task!,
+                        submitted: _submitted,
+                        isCorrect: _isCorrect,
+                        selected: _selected,
+                        tfAnswer: _tfAnswer,
+                        fillCtrl: _fillCtrl,
+                        onSelectMulti: (i) => setState(() {
+                          _selected.contains(i)
+                              ? _selected.remove(i)
+                              : _selected.add(i);
+                        }),
+                        onSelectSingle: (i) => setState(() {
+                          _selected = {i};
+                        }),
+                        onSelectTf: (v) => setState(() => _tfAnswer = v),
+                      ),
+                    ],
+                    const SizedBox(height: 20),
+                    _BottomButtons(
+                      hasTask: exercise.hasTask,
+                      canCheck: _canCheck(),
+                      submitted: _submitted,
+                      isCorrect: _isCorrect,
+                      retryable: _retryable(),
+                      onCheck: _checkAnswer,
+                      onNext: _next,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RichText extends StatelessWidget {
+  final String text;
+
+  const _RichText(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    if (text.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    final paragraphs = text.split('\n\n');
+    final children = <Widget>[];
+    for (final p in paragraphs) {
+      final trimmed = p.trim();
+      if (trimmed.isEmpty) continue;
+      children.add(Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Text(trimmed, style: const TextStyle(fontSize: 16, height: 1.5)),
+      ));
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: children,
+    );
+  }
+}
+
+class _TaskPanel extends StatelessWidget {
+  final Task task;
+  final bool submitted;
+  final bool isCorrect;
+  final Set<int> selected;
+  final bool? tfAnswer;
+  final TextEditingController fillCtrl;
+  final void Function(int) onSelectSingle;
+  final void Function(int) onSelectMulti;
+  final void Function(bool) onSelectTf;
+
+  const _TaskPanel({
+    required this.task,
+    required this.submitted,
+    required this.isCorrect,
+    required this.selected,
+    required this.tfAnswer,
+    required this.fillCtrl,
+    required this.onSelectSingle,
+    required this.onSelectMulti,
+    required this.onSelectTf,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final children = <Widget>[
+      if (task.question.isNotEmpty)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 14),
+          child: Text(
+            task.question,
+            style: const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              height: 1.4,
+            ),
+          ),
+        ),
+    ];
+
+    switch (task.type) {
+      case TaskType.single:
+      case TaskType.codeOutput:
+        children.addAll(_buildOptionList(single: true));
+      case TaskType.multi:
+        children.addAll(_buildOptionList(single: false));
+      case TaskType.trueFalse:
+        children.add(_buildTrueFalse());
+      case TaskType.fill:
+        children.add(_buildFill());
+    }
+
+    if (submitted) {
+      children.add(_FeedbackBar(task: task, correct: isCorrect));
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: children,
+    );
+  }
+
+  List<Widget> _buildOptionList({required bool single}) {
+    return [
+      for (var i = 0; i < task.options.length; i++)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: _OptionTile(
+            label: task.options[i],
+            selected: selected.contains(i),
+            showResult: submitted,
+            isRight: task.correct.contains(i),
+            isWrong: selected.contains(i) && !task.correct.contains(i),
+            onTap: submitted || single
+                ? () => onSelectSingle(i)
+                : () => onSelectMulti(i),
+          ),
+        ),
+    ];
+  }
+
+  Widget _buildTrueFalse() {
+    final buttons = <Widget>[];
+    for (final v in [true, false]) {
+      final label = v ? 'Правда' : 'Ложь';
+      final active = tfAnswer == v;
+      buttons.add(Expanded(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: OutlinedButton(
+            onPressed: submitted ? null : () => onSelectTf(v),
+            style: OutlinedButton.styleFrom(
+              backgroundColor: active ? AppColors.primary : null,
+              side: BorderSide(
+                color: active ? AppColors.primary : AppColors.textMuted,
+                width: 1.4,
+              ),
+              foregroundColor: active ? Colors.white : AppColors.textDark,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+            ),
+            child: Text(label),
+          ),
+        ),
+      ));
+    }
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(children: buttons),
+    );
+  }
+
+  Widget _buildFill() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 6,
+          runSpacing: 8,
+          children: [
+            if (task.fillBefore.isNotEmpty)
+              Text(task.fillBefore,
+                  style: const TextStyle(
+                      fontSize: 16, fontFamily: 'monospace')),
+            Container(
+              constraints: const BoxConstraints(maxWidth: 260),
+              child: TextField(
+                controller: fillCtrl,
+                enabled: !submitted || !isCorrect,
+                style: const TextStyle(fontFamily: 'monospace', fontSize: 16),
+                decoration: InputDecoration(
+                  hintText: 'введи ответ…',
+                  isDense: true,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+            ),
+            if (task.fillAfter.isNotEmpty)
+              Text(task.fillAfter,
+                  style: const TextStyle(
+                      fontSize: 16, fontFamily: 'monospace')),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _OptionTile extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final bool showResult;
+  final bool isRight;
+  final bool isWrong;
+  final VoidCallback onTap;
+
+  const _OptionTile({
+    required this.label,
+    required this.selected,
+    required this.showResult,
+    required this.isRight,
+    required this.isWrong,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    Color? bg;
+    Color? border;
+    Color? fg;
+    IconData? icon;
+
+    if (showResult) {
+      if (isRight) {
+        bg = AppColors.success.withValues(alpha: 0.14);
+        border = AppColors.success;
+        fg = AppColors.success;
+        icon = Icons.check_circle;
+      } else if (isWrong) {
+        bg = AppColors.danger.withValues(alpha: 0.12);
+        border = AppColors.danger;
+        fg = AppColors.danger;
+        icon = Icons.cancel;
+      } else {
+        bg = AppColors.background;
+        border = AppColors.textMuted.withValues(alpha: 0.35);
+        fg = AppColors.textMuted;
+        icon = Icons.remove_circle_outline;
+      }
+    } else {
+      bg = selected ? AppColors.primary : AppColors.background;
+      border = selected ? AppColors.primary : AppColors.textMuted.withValues(alpha: 0.35);
+      fg = selected ? Colors.white : AppColors.textDark;
+      icon = Icons.circle_outlined;
+    }
+
+    return InkWell(
+      onTap: showResult ? null : onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        decoration: BoxDecoration(
+          color: bg,
+          border: Border.all(color: border, width: 1.4),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 20, color: fg),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: fg,
+                  fontSize: 15,
+                  height: 1.3,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FeedbackBar extends StatelessWidget {
+  final Task task;
+  final bool correct;
+
+  const _FeedbackBar({required this.task, required this.correct});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(top: 4),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: (correct ? AppColors.success : AppColors.danger)
+            .withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                correct ? Icons.thumb_up_alt : Icons.mood_bad,
+                color: correct ? AppColors.success : AppColors.danger,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                correct ? 'Верно!' : 'Не совсем',
+                style: TextStyle(
+                  color: correct ? AppColors.success : AppColors.danger,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+          if (task.explanation.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              task.explanation,
+              style: const TextStyle(fontSize: 14.5, height: 1.45),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _BottomButtons extends StatelessWidget {
+  final bool hasTask;
+  final bool canCheck;
+  final bool submitted;
+  final bool isCorrect;
+  final bool retryable;
+  final VoidCallback onCheck;
+  final VoidCallback onNext;
+
+  const _BottomButtons({
+    required this.hasTask,
+    required this.canCheck,
+    required this.submitted,
+    required this.isCorrect,
+    required this.retryable,
+    required this.onCheck,
+    required this.onNext,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (!hasTask) {
+      return FilledButton(onPressed: onNext, child: const Text('Далее'));
+    }
+    if (submitted && !isCorrect && retryable) {
+      return FilledButton(
+        onPressed: canCheck ? onCheck : null,
+        child: const Text('Проверить ещё раз'),
+      );
+    }
+    if (submitted) {
+      return FilledButton(
+        onPressed: onNext,
+        child: Text(isCorrect ? 'Далее' : 'Продолжить'),
+      );
+    }
+    return FilledButton(
+      onPressed: canCheck ? onCheck : null,
+      child: const Text('Проверить'),
+    );
+  }
+}
