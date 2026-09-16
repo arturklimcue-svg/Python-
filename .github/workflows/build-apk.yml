@@ -1,0 +1,68 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Create Android platform scaffolding
+        run: flutter create --platforms android --org com.arturklimcue --project-name kodik .
+
+      - name: Analyze code
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Generate signing keystore
+        run: |
+          keytool -genkey -v -keystore "$RUNNER_TEMP/upload.jks" \
+            -storepass kodikrelease2026 -alias kodik -keypass kodikrelease2026 \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=Kodik, OU=Mobile, O=ArturKlimcue, L=Moscow, C=RU"
+          mkdir -p android/app
+          cat > android/key.properties << PROPS
+          storePassword=kodikrelease2026
+          keyPassword=kodikrelease2026
+          keyAlias=kodik
+          storeFile=$RUNNER_TEMP/upload.jks
+          PROPS
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kodik-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}
+          name: Release v${{ github.run_number }}
+          files: build/app/outputs/flutter-apk/app-release.apk
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
