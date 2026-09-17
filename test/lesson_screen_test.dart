@@ -10,8 +10,9 @@ import 'package:kodik/services/storage_service.dart';
 ProgressService _progress() => ProgressService(MemoryStorage());
 
 void main() {
-  testWidgets('экран урока: правильный выбор показывает «Верно!»',
-      (tester) async {
+  testWidgets('экран урока: правильный выбор показывает «Верно!»', (
+    tester,
+  ) async {
     const lesson = Lesson(
       id: 'm1-l1',
       title: 'Тест',
@@ -36,7 +37,9 @@ void main() {
     await p.load();
 
     await tester.pumpWidget(
-      MaterialApp(home: LessonScreen(lesson: lesson, progress: p)),
+      MaterialApp(
+        home: LessonScreen(lesson: lesson, progress: p),
+      ),
     );
     expect(find.text('Что выведет?'), findsOneWidget);
 
@@ -73,7 +76,9 @@ void main() {
     await p.load();
 
     await tester.pumpWidget(
-      MaterialApp(home: LessonScreen(lesson: lesson, progress: p)),
+      MaterialApp(
+        home: LessonScreen(lesson: lesson, progress: p),
+      ),
     );
 
     await tester.tap(find.text('a'));
@@ -121,7 +126,9 @@ void main() {
     await p.load();
 
     await tester.pumpWidget(
-      MaterialApp(home: LessonScreen(lesson: lesson, progress: p)),
+      MaterialApp(
+        home: LessonScreen(lesson: lesson, progress: p),
+      ),
     );
     expect(find.text('Что верно?'), findsOneWidget);
 
@@ -133,8 +140,11 @@ void main() {
     expect(find.text('Не совсем'), findsOneWidget);
     expect(find.text('Попробовать ещё раз'), findsOneWidget);
     expect(find.text('Продолжить'), findsNothing);
-    expect(p.lessonProgressOf('m1-l2')!.last, 0,
-        reason: 'неправильный ответ не двигает позицию');
+    expect(
+      p.lessonProgressOf('m1-l2')!.last,
+      0,
+      reason: 'неправильный ответ не двигает позицию',
+    );
 
     await tester.tap(find.text('Попробовать ещё раз'));
     await tester.pump();
@@ -174,11 +184,15 @@ void main() {
     await p.load();
 
     await tester.pumpWidget(
-      MaterialApp(home: LessonScreen(lesson: lesson, progress: p)),
+      MaterialApp(
+        home: LessonScreen(lesson: lesson, progress: p),
+      ),
     );
 
     await tester.enterText(
-        find.byType(TextField), 'print("Меня зовут Ботти!")');
+      find.byType(TextField),
+      'print("Меня зовут Ботти!")',
+    );
     await tester.pump();
     await tester.tap(find.text('Проверить'));
     await tester.pump();
@@ -187,8 +201,9 @@ void main() {
     expect(p.xp, 4);
   });
 
-  testWidgets('code_editor: запуск показывает вывод и засчитывает ответ',
-      (tester) async {
+  testWidgets('code_editor: запуск показывает вывод и засчитывает ответ', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1000, 2000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     const lesson = Lesson(
@@ -216,30 +231,32 @@ void main() {
     await p.load();
 
     await tester.pumpWidget(
-      MaterialApp(home: LessonScreen(lesson: lesson, progress: p)),
+      MaterialApp(
+        home: LessonScreen(lesson: lesson, progress: p),
+      ),
     );
     expect(find.text('Запустить'), findsOneWidget);
 
-    await tester.enterText(
-        find.byType(TextField), 'print("Hello, world!")');
+    await tester.enterText(find.byType(TextField), 'print("Hello, world!")');
     await tester.pump();
     await tester.ensureVisible(find.text('Запустить'));
     await tester.tap(find.text('Запустить'));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.text('Вывод программы'), findsOneWidget);
     expect(find.textContaining('Hello, world!'), findsWidgets);
 
     await tester.ensureVisible(find.text('Проверить'));
     await tester.tap(find.text('Проверить'));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.text('Верно!'), findsOneWidget);
     expect(p.xp, 4);
   });
 
-  testWidgets('code_editor: программа ждёт ввод и получает ответ',
-      (tester) async {
+  testWidgets('code_editor: программа ждёт ввод и получает ответ', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(1000, 2400));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     const lesson = Lesson(
@@ -266,22 +283,26 @@ void main() {
     await p.load();
 
     await tester.pumpWidget(
-      MaterialApp(home: LessonScreen(lesson: lesson, progress: p)),
+      MaterialApp(
+        home: LessonScreen(lesson: lesson, progress: p),
+      ),
     );
 
-    await tester.enterText(find.byType(TextField).first,
-        'name = input()\nprint("Привет,", name)');
+    await tester.enterText(
+      find.byType(TextField).first,
+      'name = input()\nprint("Привет,", name)',
+    );
     await tester.pump();
     await tester.ensureVisible(find.text('Запустить'));
     await tester.tap(find.text('Запустить'));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.textContaining('ждёт ввод'), findsOneWidget);
 
     await tester.ensureVisible(find.text('Отправить'));
     await tester.enterText(find.byType(TextField).last, 'Аня');
     await tester.tap(find.text('Отправить'));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.textContaining('Привет, Аня'), findsWidgets);
     expect(find.text('Отправить'), findsNothing);
@@ -300,9 +321,7 @@ void main() {
               title: 'Введение',
               isPractice: false,
               xp: 15,
-              exercises: [
-                Exercise(kind: ExerciseKind.theory, text: 'Привет'),
-              ],
+              exercises: [Exercise(kind: ExerciseKind.theory, text: 'Привет')],
             ),
           ],
         ),
@@ -314,8 +333,7 @@ void main() {
     await tester.pumpWidget(KodikApp(course: course, progress: p));
     expect(find.text('КодиК'), findsOneWidget);
 
-    await tester.enterText(
-        find.byType(TextField), 'Артём');
+    await tester.enterText(find.byType(TextField), 'Артём');
     await tester.tap(find.text('Начать обучение'));
     await tester.pumpAndSettle();
 

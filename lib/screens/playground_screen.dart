@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/python_interpreter.dart';
+import '../services/python_runtime.dart';
 import '../theme.dart';
 import '../widgets/python_input_bar.dart';
 import '../widgets/python_output_panel.dart';
@@ -42,7 +43,7 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
     setState(() => _running = true);
     PyRunResult result;
     try {
-      result = await runPythonAsync(_ctrl.text, stdin: _inputs.join('\n'));
+      result = await PythonRuntime.run(_ctrl.text, stdin: _inputs.join('\n'));
     } catch (e) {
       result = PyRunResult(false, '', 'Не удалось выполнить код: $e');
     }

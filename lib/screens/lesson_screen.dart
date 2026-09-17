@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/course.dart';
 import '../models/exercise.dart';
 import '../services/progress_service.dart';
-import '../services/python_interpreter.dart';
+import '../services/python_runtime.dart';
 import '../theme.dart';
 import '../widgets/code_block.dart';
 import '../widgets/python_input_bar.dart';
@@ -12,11 +12,7 @@ class LessonScreen extends StatefulWidget {
   final Lesson lesson;
   final ProgressService progress;
 
-  const LessonScreen({
-    super.key,
-    required this.lesson,
-    required this.progress,
-  });
+  const LessonScreen({super.key, required this.lesson, required this.progress});
 
   @override
   State<LessonScreen> createState() => _LessonScreenState();
@@ -46,9 +42,7 @@ class _LessonScreenState extends State<LessonScreen> {
   void initState() {
     super.initState();
     final lp = widget.progress.lessonProgressOf(widget.lesson.id);
-    _index = (lp?.last ?? 0)
-        .clamp(0, widget.lesson.exerciseCount - 1)
-        .toInt();
+    _index = (lp?.last ?? 0).clamp(0, widget.lesson.exerciseCount - 1).toInt();
     _fillCtrl = TextEditingController();
     _editorCtrl = TextEditingController(
       text: widget.lesson.exercises[_index].task?.starter ?? '',
@@ -77,8 +71,12 @@ class _LessonScreenState extends State<LessonScreen> {
     super.dispose();
   }
 
-  void _runEditor() {
-    final result = runPython(_editorCtrl.text, stdin: _editorInput.join('\n'));
+  Future<void> _runEditor() async {
+    final result = await PythonRuntime.run(
+      _editorCtrl.text,
+      stdin: _editorInput.join('\n'),
+    );
+    if (!mounted) return;
     setState(() {
       _editorRan = true;
       _editorOutput = result.stdout;
@@ -93,14 +91,16 @@ class _LessonScreenState extends State<LessonScreen> {
     _runEditor();
   }
 
-  void _checkAnswer() {
+  Future<void> _checkAnswer() async {
     if (_submitted) return;
     final task = _exercise.task;
     bool correct;
     switch (task!.type) {
       case TaskType.single:
       case TaskType.codeOutput:
-        correct = task.checkAnswer(_selected.length == 1 ? _selected.first : -1);
+        correct = task.checkAnswer(
+          _selected.length == 1 ? _selected.first : -1,
+        );
       case TaskType.multi:
         correct = task.checkAnswer(_selected.toList());
       case TaskType.trueFalse:
@@ -110,14 +110,18 @@ class _LessonScreenState extends State<LessonScreen> {
       case TaskType.codeBuild:
         correct = task.checkAnswer(List<int>.from(_buildOrder));
       case TaskType.codeEditor:
-        final result = runPython(_editorCtrl.text, stdin: _editorInput.join('\n'));
+        final result = await PythonRuntime.run(
+          _editorCtrl.text,
+          stdin: _editorInput.join('\n'),
+        );
         _editorRan = true;
         _editorOutput = result.stdout;
         _editorError = result.ok ? null : result.error;
         _editorNeedsInput = result.ok && result.inputsMissing > 0;
-        correct = task.checkEditorCode(_editorCtrl.text);
+        correct = await task.checkEditorCodeAsync(_editorCtrl.text);
     }
     widget.progress.recordExercise(widget.lesson.id, _index, correct);
+    if (!mounted) return;
     setState(() {
       _submitted = true;
       _isCorrect = correct;
@@ -184,11 +188,16 @@ class _LessonScreenState extends State<LessonScreen> {
   Future<void> _finish() async {
     if (!_finished) {
       _finished = true;
-      await widget.progress
-          .completeLesson(widget.lesson.id, widget.lesson.xp, 5);
+      await widget.progress.completeLesson(
+        widget.lesson.id,
+        widget.lesson.xp,
+        5,
+      );
     }
     if (!mounted) return;
-    final title = widget.lesson.isPractice ? 'Практика завершена' : 'Урок пройден';
+    final title = widget.lesson.isPractice
+        ? 'Практика завершена'
+        : 'Урок пройден';
     showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -243,7 +252,9 @@ class _LessonScreenState extends State<LessonScreen> {
                 if (widget.lesson.isPractice)
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 4),
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.accent.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(30),
@@ -344,10 +355,15 @@ class _RichText extends StatelessWidget {
     for (final p in paragraphs) {
       final trimmed = p.trim();
       if (trimmed.isEmpty) continue;
-      children.add(Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: Text(trimmed, style: const TextStyle(fontSize: 16, height: 1.5)),
-      ));
+      children.add(
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Text(
+            trimmed,
+            style: const TextStyle(fontSize: 16, height: 1.5),
+          ),
+        ),
+      );
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -519,9 +535,7 @@ class _TaskPanel extends StatelessWidget {
           onPressed: submitted ? null : onRun,
           icon: const Icon(Icons.play_arrow_rounded),
           label: const Text('Запустить'),
-          style: FilledButton.styleFrom(
-            minimumSize: const Size.fromHeight(48),
-          ),
+          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
         ),
         if (editorRan) ...[
           const SizedBox(height: 12),
@@ -563,24 +577,26 @@ class _TaskPanel extends StatelessWidget {
     for (final v in [true, false]) {
       final label = v ? 'Правда' : 'Ложь';
       final active = tfAnswer == v;
-      buttons.add(Expanded(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: OutlinedButton(
-            onPressed: submitted ? null : () => onSelectTf(v),
-            style: OutlinedButton.styleFrom(
-              backgroundColor: active ? AppColors.primary : null,
-              side: BorderSide(
-                color: active ? AppColors.primary : AppColors.textMuted,
-                width: 1.4,
+      buttons.add(
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: OutlinedButton(
+              onPressed: submitted ? null : () => onSelectTf(v),
+              style: OutlinedButton.styleFrom(
+                backgroundColor: active ? AppColors.primary : null,
+                side: BorderSide(
+                  color: active ? AppColors.primary : AppColors.textMuted,
+                  width: 1.4,
+                ),
+                foregroundColor: active ? Colors.white : AppColors.textDark,
+                padding: const EdgeInsets.symmetric(vertical: 14),
               ),
-              foregroundColor: active ? Colors.white : AppColors.textDark,
-              padding: const EdgeInsets.symmetric(vertical: 14),
+              child: Text(label),
             ),
-            child: Text(label),
           ),
         ),
-      ));
+      );
     }
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -598,9 +614,10 @@ class _TaskPanel extends StatelessWidget {
           runSpacing: 8,
           children: [
             if (task.fillBefore.isNotEmpty)
-              Text(task.fillBefore,
-                  style: const TextStyle(
-                      fontSize: 16, fontFamily: 'monospace')),
+              Text(
+                task.fillBefore,
+                style: const TextStyle(fontSize: 16, fontFamily: 'monospace'),
+              ),
             Container(
               constraints: const BoxConstraints(maxWidth: 260),
               child: TextField(
@@ -618,9 +635,10 @@ class _TaskPanel extends StatelessWidget {
               ),
             ),
             if (task.fillAfter.isNotEmpty)
-              Text(task.fillAfter,
-                  style: const TextStyle(
-                      fontSize: 16, fontFamily: 'monospace')),
+              Text(
+                task.fillAfter,
+                style: const TextStyle(fontSize: 16, fontFamily: 'monospace'),
+              ),
           ],
         ),
       ],
@@ -751,7 +769,9 @@ class _OptionTile extends StatelessWidget {
       }
     } else {
       bg = selected ? AppColors.primary : AppColors.background;
-      border = selected ? AppColors.primary : AppColors.textMuted.withValues(alpha: 0.35);
+      border = selected
+          ? AppColors.primary
+          : AppColors.textMuted.withValues(alpha: 0.35);
       fg = selected ? Colors.white : AppColors.textDark;
       icon = Icons.circle_outlined;
     }
@@ -814,7 +834,9 @@ class _BuildLineTile extends StatelessWidget {
 
     final placed = position >= 0;
     final rightPos =
-        placed && position < correctOrder.length && correctOrder[position] == index;
+        placed &&
+        position < correctOrder.length &&
+        correctOrder[position] == index;
 
     if (submitted) {
       if (rightPos) {
@@ -835,7 +857,9 @@ class _BuildLineTile extends StatelessWidget {
       }
     } else {
       bg = placed ? AppColors.primary : AppColors.background;
-      border = placed ? AppColors.primary : AppColors.textMuted.withValues(alpha: 0.35);
+      border = placed
+          ? AppColors.primary
+          : AppColors.textMuted.withValues(alpha: 0.35);
       fg = placed ? Colors.white : AppColors.textDark;
       badgeFg = placed ? Colors.white : AppColors.textMuted;
     }
@@ -857,7 +881,9 @@ class _BuildLineTile extends StatelessWidget {
               height: 26,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: placed ? badgeFg.withValues(alpha: 0.22) : Colors.transparent,
+                color: placed
+                    ? badgeFg.withValues(alpha: 0.22)
+                    : Colors.transparent,
                 shape: BoxShape.circle,
                 border: Border.all(color: badgeFg),
               ),
@@ -901,8 +927,9 @@ class _FeedbackBar extends StatelessWidget {
       margin: const EdgeInsets.only(top: 4),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: (correct ? AppColors.success : AppColors.danger)
-            .withValues(alpha: 0.10),
+        color: (correct ? AppColors.success : AppColors.danger).withValues(
+          alpha: 0.10,
+        ),
         borderRadius: BorderRadius.circular(14),
       ),
       child: Column(

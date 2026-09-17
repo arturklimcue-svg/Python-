@@ -1,8 +1,17 @@
 import '../services/python_interpreter.dart';
+import '../services/python_runtime.dart';
 
 enum ExerciseKind { theory, theoryTask }
 
-enum TaskType { single, multi, trueFalse, fill, codeOutput, codeBuild, codeEditor }
+enum TaskType {
+  single,
+  multi,
+  trueFalse,
+  fill,
+  codeOutput,
+  codeBuild,
+  codeEditor,
+}
 
 enum TaskStatus { unattempted, correct, wrong }
 
@@ -90,11 +99,12 @@ class Task {
       stdin: (j['stdin'] as String?) ?? '',
       referenceOutput: (j['reference_output'] as String?) ?? '',
       solution: (j['solution'] as String?) ?? '',
-      editorCheck: (((j['editor_check'] as Map<String, dynamic>?)?['cases']
-                  as List<dynamic>?) ??
-              const [])
-          .map((e) => EditorCheckCase.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      editorCheck:
+          (((j['editor_check'] as Map<String, dynamic>?)?['cases']
+                      as List<dynamic>?) ??
+                  const [])
+              .map((e) => EditorCheckCase.fromJson(e as Map<String, dynamic>))
+              .toList(),
     );
   }
 
@@ -173,6 +183,27 @@ class Task {
     return true;
   }
 
+  /// То же, что [checkEditorCode], но с настоящим Python на устройстве.
+  Future<bool> checkEditorCodeAsync(String code) async {
+    if (editorCheck.isEmpty) {
+      final r = await PythonRuntime.run(code, stdin: stdin);
+      return r.ok && checkEditorOutput(r.stdout);
+    }
+    for (final c in editorCheck) {
+      final r = await PythonRuntime.run(code, stdin: c.stdin);
+      if (!r.ok) return false;
+      final out = _lean(r.stdout);
+      for (final f in c.require) {
+        if (!out.contains(_lean(f))) return false;
+      }
+      if (c.requireAny.isNotEmpty &&
+          !c.requireAny.any((f) => out.contains(_lean(f)))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   /// Нормализация для мягкого сравнения: регистр, пробелы и любые знаки
   /// препинания игнорируются, остаются только буквы и цифры. Так «Привет,
   /// Аня!» и «привет аня» считаются одинаковыми.
@@ -229,12 +260,7 @@ class Exercise {
   final String? code;
   final Task? task;
 
-  const Exercise({
-    required this.kind,
-    this.text = '',
-    this.code,
-    this.task,
-  });
+  const Exercise({required this.kind, this.text = '', this.code, this.task});
 
   bool get hasTask => task != null;
 
