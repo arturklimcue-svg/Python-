@@ -189,6 +189,8 @@ void main() {
 
   testWidgets('code_editor: запуск показывает вывод и засчитывает ответ',
       (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1000, 2000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     const lesson = Lesson(
       id: 'm1-l1',
       title: 'Редактор',
