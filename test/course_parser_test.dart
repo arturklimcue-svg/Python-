@@ -108,6 +108,38 @@ void main() {
     expect(task.checkEditorCode('print("Пока")'), isFalse);
   });
 
+  test('мягкая проверка прощает пунктуацию и другую формулировку подсказок',
+      () {
+    const task = Task(
+      type: TaskType.codeEditor,
+      editorCheck: [
+        EditorCheckCase(
+          stdin: 'Аня\n10\n',
+          require: [
+            'Привет! Я бот Ботти.',
+            'Очень приятно,',
+            'Тебе 10 лет',
+            'Бот завершил работу. Пока!',
+          ],
+          requireAny: ['Рад знакомству!', 'Удачного дня!'],
+        ),
+      ],
+    );
+    const code = '''
+import random
+
+print("Привет! Я бот Ботти")
+name = input("Как тебя зовут?  ")
+print("Очень приятно,", name)
+age = input("Сколько тебя лет? ")
+print("Тебе", age, "лет")
+print(random.choice(["Рад знакомству!", "Удачного дня!"]))
+print("Бот завершил работу. Пока!")
+''';
+    expect(task.checkEditorCode(code), isTrue);
+    expect(task.checkEditorCode('print("совсем другое")'), isFalse);
+  });
+
   test('многострочный вывод в вариантах хранится с переносами строк', () async {
     final course = await CourseRepository.loadFromAssets();
     for (final m in course.modules) {
