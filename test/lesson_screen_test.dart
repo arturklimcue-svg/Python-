@@ -49,6 +49,44 @@ void main() {
     expect(p.xp, 4);
   });
 
+  testWidgets('code_build: сборка программы в верном порядке', (tester) async {
+    const lesson = Lesson(
+      id: 'm1-l4',
+      title: 'Сборка',
+      isPractice: false,
+      xp: 40,
+      exercises: [
+        Exercise(
+          kind: ExerciseKind.theoryTask,
+          text: 'Собери программу',
+          task: Task(
+            type: TaskType.codeBuild,
+            question: 'Расположи строки',
+            options: ['b', 'a'],
+            correct: [1, 0],
+            explanation: 'a, потом b',
+          ),
+        ),
+      ],
+    );
+    final p = _progress();
+    await p.load();
+
+    await tester.pumpWidget(
+      MaterialApp(home: LessonScreen(lesson: lesson, progress: p)),
+    );
+
+    await tester.tap(find.text('a'));
+    await tester.pump();
+    await tester.tap(find.text('b'));
+    await tester.pump();
+    await tester.tap(find.text('Проверить'));
+    await tester.pump();
+
+    expect(find.text('Верно!'), findsOneWidget);
+    expect(p.xp, 4);
+  });
+
   testWidgets('экран урока: ошибка не пропускает упражнение', (tester) async {
     const lesson = Lesson(
       id: 'm1-l2',

@@ -1,6 +1,6 @@
 enum ExerciseKind { theory, theoryTask }
 
-enum TaskType { single, multi, trueFalse, fill, codeOutput }
+enum TaskType { single, multi, trueFalse, fill, codeOutput, codeBuild }
 
 enum TaskStatus { unattempted, correct, wrong }
 
@@ -62,6 +62,8 @@ class Task {
         return TaskType.fill;
       case 'code_output':
         return TaskType.codeOutput;
+      case 'code_build':
+        return TaskType.codeBuild;
       default:
         throw ArgumentError('Unknown task type: $s');
     }
@@ -84,7 +86,19 @@ class Task {
         return correctBool != null && answer == correctBool;
       case TaskType.fill:
         return _checkFill(answer);
+      case TaskType.codeBuild:
+        return _checkBuild(answer);
     }
+  }
+
+  bool _checkBuild(dynamic answer) {
+    if (answer is! List) return false;
+    final order = answer.cast<int>().toList();
+    if (order.isEmpty || order.length != correct.length) return false;
+    for (var i = 0; i < order.length; i++) {
+      if (order[i] != correct[i]) return false;
+    }
+    return true;
   }
 
   bool _checkFill(dynamic answer) {

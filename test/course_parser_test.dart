@@ -50,6 +50,13 @@ void main() {
                 expect(t.correctBool, isNotNull);
               case TaskType.fill:
                 expect(t.answers, isNotEmpty);
+              case TaskType.codeBuild:
+                expect(t.correct.length, t.options.length);
+                for (var c in t.correct) {
+                  expect(c, lessThan(t.options.length));
+                }
+                expect(t.correct.toSet().length, t.correct.length,
+                    reason: 'code_build должен быть перестановкой');
             }
           }
         }

@@ -27,6 +27,7 @@ class _LessonScreenState extends State<LessonScreen> {
   Set<int> _selected = {};
   bool? _tfAnswer;
   late TextEditingController _fillCtrl;
+  List<int> _buildOrder = [];
   int _rightCount = 0;
   bool _finished = false;
 
@@ -62,6 +63,8 @@ class _LessonScreenState extends State<LessonScreen> {
         correct = task.checkAnswer(_tfAnswer);
       case TaskType.fill:
         correct = task.checkAnswer(_fillCtrl.text);
+      case TaskType.codeBuild:
+        correct = task.checkAnswer(List<int>.from(_buildOrder));
     }
     widget.progress.recordExercise(widget.lesson.id, _index, correct);
     setState(() {
@@ -78,6 +81,7 @@ class _LessonScreenState extends State<LessonScreen> {
       _selected = {};
       _tfAnswer = null;
       _fillCtrl.clear();
+      _buildOrder = [];
     });
   }
 
@@ -94,6 +98,8 @@ class _LessonScreenState extends State<LessonScreen> {
         return _tfAnswer != null;
       case TaskType.fill:
         return _fillCtrl.text.trim().isNotEmpty;
+      case TaskType.codeBuild:
+        return _buildOrder.length == task.options.length;
     }
   }
 
@@ -110,6 +116,7 @@ class _LessonScreenState extends State<LessonScreen> {
         _selected = {};
         _tfAnswer = null;
         _fillCtrl.clear();
+        _buildOrder = [];
       });
       return;
     }
@@ -213,6 +220,7 @@ class _LessonScreenState extends State<LessonScreen> {
                         selected: _selected,
                         tfAnswer: _tfAnswer,
                         fillCtrl: _fillCtrl,
+                        buildOrder: _buildOrder,
                         onSelectMulti: (i) => setState(() {
                           _selected.contains(i)
                               ? _selected.remove(i)
@@ -222,6 +230,13 @@ class _LessonScreenState extends State<LessonScreen> {
                           _selected = {i};
                         }),
                         onSelectTf: (v) => setState(() => _tfAnswer = v),
+                        onBuildTap: (i) => setState(() {
+                          if (_buildOrder.contains(i)) {
+                            _buildOrder.removeAt(_buildOrder.indexOf(i));
+                          } else {
+                            _buildOrder.add(i);
+                          }
+                        }),
                         onFillChanged: () => setState(() {}),
                       ),
                     ],
@@ -280,9 +295,11 @@ class _TaskPanel extends StatelessWidget {
   final Set<int> selected;
   final bool? tfAnswer;
   final TextEditingController fillCtrl;
+  final List<int> buildOrder;
   final void Function(int) onSelectSingle;
   final void Function(int) onSelectMulti;
   final void Function(bool) onSelectTf;
+  final void Function(int) onBuildTap;
   final VoidCallback onFillChanged;
 
   const _TaskPanel({
@@ -292,9 +309,11 @@ class _TaskPanel extends StatelessWidget {
     required this.selected,
     required this.tfAnswer,
     required this.fillCtrl,
+    required this.buildOrder,
     required this.onSelectSingle,
     required this.onSelectMulti,
     required this.onSelectTf,
+    required this.onBuildTap,
     required this.onFillChanged,
   });
 
@@ -325,6 +344,8 @@ class _TaskPanel extends StatelessWidget {
         children.add(_buildTrueFalse());
       case TaskType.fill:
         children.add(_buildFill());
+      case TaskType.codeBuild:
+        children.add(_buildCodeBuild());
     }
 
     if (submitted) {
@@ -334,6 +355,33 @@ class _TaskPanel extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: children,
+    );
+  }
+
+  Widget _buildCodeBuild() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: Text(
+            'Нажми на строки по очереди, чтобы собрать программу.',
+            style: const TextStyle(fontSize: 14, color: AppColors.textMuted),
+          ),
+        ),
+        for (var i = 0; i < task.options.length; i++)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: _BuildLineTile(
+              index: i,
+              line: task.options[i],
+              position: buildOrder.indexOf(i),
+              submitted: submitted,
+              correctOrder: task.correct,
+              onTap: submitted ? null : () => onBuildTap(i),
+            ),
+          ),
+      ],
     );
   }
 
@@ -496,6 +544,107 @@ class _OptionTile extends StatelessWidget {
                   fontSize: 15,
                   height: 1.3,
                   fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _BuildLineTile extends StatelessWidget {
+  final int index;
+  final String line;
+  final int position;
+  final bool submitted;
+  final List<int> correctOrder;
+  final VoidCallback? onTap;
+
+  const _BuildLineTile({
+    required this.index,
+    required this.line,
+    required this.position,
+    required this.submitted,
+    required this.correctOrder,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    Color bg;
+    Color border;
+    Color fg;
+    Color badgeFg;
+
+    final placed = position >= 0;
+    final rightPos =
+        placed && position < correctOrder.length && correctOrder[position] == index;
+
+    if (submitted) {
+      if (rightPos) {
+        bg = AppColors.success.withValues(alpha: 0.14);
+        border = AppColors.success;
+        fg = AppColors.success;
+        badgeFg = Colors.white;
+      } else if (placed) {
+        bg = AppColors.danger.withValues(alpha: 0.12);
+        border = AppColors.danger;
+        fg = AppColors.danger;
+        badgeFg = Colors.white;
+      } else {
+        bg = AppColors.background;
+        border = AppColors.textMuted.withValues(alpha: 0.35);
+        fg = AppColors.textMuted;
+        badgeFg = AppColors.textMuted;
+      }
+    } else {
+      bg = placed ? AppColors.primary : AppColors.background;
+      border = placed ? AppColors.primary : AppColors.textMuted.withValues(alpha: 0.35);
+      fg = placed ? Colors.white : AppColors.textDark;
+      badgeFg = placed ? Colors.white : AppColors.textMuted;
+    }
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+        decoration: BoxDecoration(
+          color: bg,
+          border: Border.all(color: border, width: 1.3),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 26,
+              height: 26,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: placed ? badgeFg.withValues(alpha: 0.22) : Colors.transparent,
+                shape: BoxShape.circle,
+                border: Border.all(color: badgeFg),
+              ),
+              child: Text(
+                placed ? '${position + 1}' : '',
+                style: TextStyle(
+                  color: badgeFg,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                line,
+                style: TextStyle(
+                  color: fg,
+                  fontFamily: 'monospace',
+                  fontSize: 13.5,
+                  height: 1.35,
                 ),
               ),
             ),
