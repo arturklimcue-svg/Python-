@@ -89,7 +89,7 @@ class _LessonScreenState extends State<LessonScreen> {
         _editorRan = true;
         _editorOutput = result.stdout;
         _editorError = result.ok ? null : result.error;
-        correct = result.ok && task.checkEditorOutput(result.stdout);
+        correct = task.checkEditorCode(_editorCtrl.text);
     }
     widget.progress.recordExercise(widget.lesson.id, _index, correct);
     setState(() {

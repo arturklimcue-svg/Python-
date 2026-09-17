@@ -69,8 +69,63 @@ void main() {
     expect(tasks, greaterThan(50));
   });
 
-  test('fill принимает и полную строку, и только пропуск', () {
+  test('проекты code_editor проходят editor_check своим решением', () async {
+    final course = await CourseRepository.loadFromAssets();
+    var projects = 0;
+    for (final m in course.modules) {
+      for (final l in m.lessons) {
+        for (final e in l.exercises) {
+          final t = e.task;
+          if (t == null || t.type != TaskType.codeEditor) continue;
+          if (t.editorCheck.isEmpty) continue;
+          projects++;
+          expect(
+            t.checkEditorCode(t.solution),
+            isTrue,
+            reason: '${l.id}: решение не проходит editor_check',
+          );
+        }
+      }
+    }
+    expect(projects, greaterThanOrEqualTo(9));
+  });
+
+  test('мягкая проверка принимает переиначенный код с тем же смыслом', () {
     const task = Task(
+      type: TaskType.codeEditor,
+      editorCheck: [
+        EditorCheckCase(stdin: 'Аня\n', require: ['Привет, Аня!']),
+      ],
+    );
+    expect(
+      task.checkEditorCode('name = input()\nprint(f"Привет, {name}!")'),
+      isTrue,
+    );
+    expect(
+      task.checkEditorCode('n = input()\nprint("Привет, " + n + "!")'),
+      isTrue,
+    );
+    expect(task.checkEditorCode('print("Пока")'), isFalse);
+  });
+
+  test('многострочный вывод в вариантах хранится с переносами строк', () async {
+    final course = await CourseRepository.loadFromAssets();
+    for (final m in course.modules) {
+      for (final l in m.lessons) {
+        for (final e in l.exercises) {
+          for (final o in e.task?.options ?? const <String>[]) {
+            expect(
+              o.contains(r'\n'),
+              isFalse,
+              reason: '${l.id}: вариант содержит литеральный \\n',
+            );
+          }
+        }
+      }
+    }
+  });
+
+  test('fill принимает и полную строку, и только пропуск', () {    const task = Task(
       type: TaskType.fill,
       question: 'q',
       fillBefore: '',

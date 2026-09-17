@@ -16,6 +16,7 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
   String? _output;
   String? _error;
   bool _ran = false;
+  bool _running = false;
 
   static const _examples = <String, String>{
     'Привет': 'print("Привет, мир!")\n',
@@ -30,9 +31,18 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
     super.dispose();
   }
 
-  void _run() {
-    final result = runPython(_ctrl.text);
+  Future<void> _run() async {
+    if (_running) return;
+    setState(() => _running = true);
+    PyRunResult result;
+    try {
+      result = await runPythonAsync(_ctrl.text);
+    } catch (e) {
+      result = PyRunResult(false, '', 'Не удалось выполнить код: $e');
+    }
+    if (!mounted) return;
     setState(() {
+      _running = false;
       _ran = true;
       _output = result.stdout;
       _error = result.ok ? null : result.error;
@@ -100,9 +110,15 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
         ),
         const SizedBox(height: 10),
         FilledButton.icon(
-          onPressed: _run,
-          icon: const Icon(Icons.play_arrow_rounded),
-          label: const Text('Запустить'),
+          onPressed: _running ? null : _run,
+          icon: _running
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Icon(Icons.play_arrow_rounded),
+          label: Text(_running ? 'Выполняется…' : 'Запустить'),
           style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
         ),
         if (_ran) ...[

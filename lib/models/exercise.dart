@@ -1,8 +1,37 @@
+import '../services/python_interpreter.dart';
+
 enum ExerciseKind { theory, theoryTask }
 
 enum TaskType { single, multi, trueFalse, fill, codeOutput, codeBuild, codeEditor }
 
 enum TaskStatus { unattempted, correct, wrong }
+
+/// Один проверочный прогон для заданий code_editor. Вывод программы ученика
+/// нормализуется, после чего проверяется наличие фрагментов [require]
+/// и хотя бы одного из [requireAny].
+class EditorCheckCase {
+  final String stdin;
+  final List<String> require;
+  final List<String> requireAny;
+
+  const EditorCheckCase({
+    this.stdin = '',
+    this.require = const [],
+    this.requireAny = const [],
+  });
+
+  factory EditorCheckCase.fromJson(Map<String, dynamic> j) {
+    return EditorCheckCase(
+      stdin: (j['stdin'] as String?) ?? '',
+      require: ((j['require'] as List<dynamic>?) ?? const [])
+          .map((e) => e.toString())
+          .toList(),
+      requireAny: ((j['require_any'] as List<dynamic>?) ?? const [])
+          .map((e) => e.toString())
+          .toList(),
+    );
+  }
+}
 
 class Task {
   final TaskType type;
@@ -19,6 +48,7 @@ class Task {
   final String stdin;
   final String referenceOutput;
   final String solution;
+  final List<EditorCheckCase> editorCheck;
 
   const Task({
     required this.type,
@@ -35,6 +65,7 @@ class Task {
     this.stdin = '',
     this.referenceOutput = '',
     this.solution = '',
+    this.editorCheck = const [],
   });
 
   factory Task.fromJson(Map<String, dynamic> j) {
@@ -59,6 +90,11 @@ class Task {
       stdin: (j['stdin'] as String?) ?? '',
       referenceOutput: (j['reference_output'] as String?) ?? '',
       solution: (j['solution'] as String?) ?? '',
+      editorCheck: (((j['editor_check'] as Map<String, dynamic>?)?['cases']
+                  as List<dynamic>?) ??
+              const [])
+          .map((e) => EditorCheckCase.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 
@@ -103,7 +139,7 @@ class Task {
       case TaskType.codeBuild:
         return _checkBuild(answer);
       case TaskType.codeEditor:
-        return answer is String && checkEditorOutput(answer);
+        return answer is String && checkEditorCode(answer);
     }
   }
 
@@ -113,6 +149,34 @@ class Task {
     if (referenceOutput.isEmpty) return false;
     return _normOutput(actual) == _normOutput(referenceOutput);
   }
+
+  /// Гибкая проверка проекта: прогоняет код ученика на каждом кейсе и
+  /// проверяет наличие ключевых фрагментов. Если кейсов нет — работает
+  /// строгое сравнение с эталоном.
+  bool checkEditorCode(String code) {
+    if (editorCheck.isEmpty) {
+      final r = runPython(code, stdin: stdin);
+      return r.ok && checkEditorOutput(r.stdout);
+    }
+    for (final c in editorCheck) {
+      final r = runPython(code, stdin: c.stdin);
+      if (!r.ok) return false;
+      final out = _lean(r.stdout);
+      for (final f in c.require) {
+        if (!out.contains(_lean(f))) return false;
+      }
+      if (c.requireAny.isNotEmpty &&
+          !c.requireAny.any((f) => out.contains(_lean(f)))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /// Нормализация для мягкого сравнения: регистр, пробелы и пунктуация
+  /// игнорируются, но буквы, цифры и точки сохраняются.
+  static String _lean(String s) =>
+      s.toLowerCase().replaceAll(RegExp(r'[^0-9a-zа-яё.]+'), '');
 
   static String _normOutput(String s) {
     final lines = s

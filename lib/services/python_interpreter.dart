@@ -2,6 +2,7 @@
 // No Flutter / dart:ui dependencies so it can run tests on any platform.
 // ignore_for_file: non_constant_identifier_names, prefer_final_locals, library_private_types_in_public_api
 import 'dart:convert' as convert;
+import 'dart:isolate';
 import 'dart:math' as math;
 
 class PyError implements Exception {
@@ -31,6 +32,12 @@ PyRunResult runPython(String code, {String stdin = ''}) {
   } catch (e) {
     return PyRunResult(false, interp.out.toString(), e.toString());
   }
+}
+
+/// Runs a Python-subset program on a background isolate so the UI stays
+/// responsive even for long or infinite loops. Result is sendable.
+Future<PyRunResult> runPythonAsync(String code, {String stdin = ''}) {
+  return Isolate.run(() => runPython(code, stdin: stdin));
 }
 
 // ---------------------------------------------------------------------------
@@ -79,6 +86,15 @@ class PyRange {
 class PySet {
   final List<dynamic> items;
   PySet([List<dynamic>? items]) : items = items ?? [];
+}
+
+class PyResponse {
+  final int statusCode;
+  final String reason;
+  final dynamic payload; // PyDict / PyList
+  final PyDict headers;
+  final String url;
+  PyResponse(this.statusCode, this.reason, this.payload, this.headers, this.url);
 }
 
 class PyFunction {
@@ -1852,6 +1868,30 @@ class _Interp {
       if (obj.attrs.containsKey(name)) return obj.attrs[name];
       throw PyError("module '${obj.name}' has no attribute '$name'");
     }
+    if (obj is PyResponse) {
+      switch (name) {
+        case 'status_code':
+          return obj.statusCode;
+        case 'reason':
+          return obj.reason;
+        case 'url':
+          return obj.url;
+        case 'headers':
+          return obj.headers;
+        case 'text':
+          return _jsonEncodePy(obj.payload);
+        case 'json':
+          return PyBuiltin('json', (a, k) => obj.payload);
+        case 'raise_for_status':
+          return PyBuiltin('raise_for_status', (a, k) {
+            if (obj.statusCode >= 400) {
+              throw PyError('${obj.statusCode} Client Error: ${obj.reason}');
+            }
+            return pyNone;
+          });
+      }
+      throw PyError("'Response' object has no attribute '$name'");
+    }
     if (obj is String) {
       final b = _stringMethod(obj, name);
       if (b != null) return b;
@@ -2557,8 +2597,7 @@ class _Interp {
     return _typeName(v);
   }
 
-  String _typeName(dynamic v) {    if (v is bool) return 'bool';
-    if (v is int) return 'int';
+  String _typeName(dynamic v) {    if (v is bool) return 'bool';    if (v is int) return 'int';
     if (v is double) return 'float';
     if (v is String) return 'str';
     if (v is PyNone) return 'NoneType';
@@ -2571,6 +2610,7 @@ class _Interp {
     if (v is PyClass) return 'type';
     if (v is PyFunction || v is PyBuiltin || v is PyBoundBuiltin) return 'function';
     if (v is PyNamespace) return 'module';
+    if (v is PyResponse) return 'Response';
     return 'object';
   }
 
@@ -2619,6 +2659,7 @@ class _Interp {
       if (v.step == 1) return 'range(${v.start}, ${v.stop})';
       return 'range(${v.start}, ${v.stop}, ${v.step})';
     }
+    if (v is PyResponse) return '<Response [${v.statusCode}]>';
     return _str(v);
   }
 
@@ -2952,21 +2993,78 @@ class _Interp {
         break;
       case 'requests':
         ns = PyNamespace('requests', {
-          'get': PyBuiltin('get', (a, k) {
-            throw PyError('Сетевые запросы недоступны в приложении');
-          }),
-          'post': PyBuiltin('post', (a, k) {
-            throw PyError('Сетевые запросы недоступны в приложении');
-          }),
+          'get': PyBuiltin(
+              'get', (a, k) => _fakeResponse(_str(a.isEmpty ? '' : a[0]))),
+          'post': PyBuiltin(
+              'post', (a, k) => _fakeResponse(_str(a.isEmpty ? '' : a[0]))),
+          'head': PyBuiltin(
+              'head', (a, k) => _fakeResponse(_str(a.isEmpty ? '' : a[0]))),
           'RequestException': 'RequestException',
-          'exceptions': PyNamespace('exceptions', {'RequestException': 'RequestException'}),
+          'exceptions':
+              PyNamespace('exceptions', {'RequestException': 'RequestException'}),
         });
         break;
       default:
+        if (_unavailableModules.contains(base)) {
+          throw PyError(
+              "Модуль '$base' недоступен в этом приложении: сеть и системные "
+              'модули (datetime, os, sys, pandas и подобные) работают только на '
+              'полноценном Python.');
+        }
         throw PyError("No module named '$name'");
     }
     _modules[base] = ns;
     return ns;
+  }
+
+  static const _unavailableModules = <String>{
+    'datetime',
+    'os',
+    'sys',
+    'pandas',
+    'socket',
+    'subprocess',
+    'time',
+    'requests_html',
+    'bs4',
+    'selenium',
+  };
+
+  static const _cannedData = <String, Map<String, dynamic>>{
+    'rates': {
+      'base': 'USD',
+      'date': '2026-01-15',
+      'rates': {'RUB': 92.5, 'EUR': 0.92, 'GBP': 0.79},
+    },
+    'search': {
+      'results': [
+        {'q': 'python'}
+      ],
+      'total': 1,
+    },
+    'generate': {
+      'choices': [
+        {'content': 'Привет, друг!'}
+      ],
+      'model': 'chat-mini',
+    },
+  };
+
+  PyResponse _fakeResponse(String url) {
+    final u = url.toLowerCase();
+    Map<String, dynamic> payload = const {'status': 'ok'};
+    if (u.contains('generate') || u.contains('chat') || u.contains('complet')) {
+      payload = _cannedData['generate']!;
+    } else if (u.contains('rate')) {
+      payload = _cannedData['rates']!;
+    } else if (u.contains('search')) {
+      payload = _cannedData['search']!;
+    }
+    final headers = PyDict([
+      ['Content-Type', 'application/json; charset=utf-8'],
+      ['Server', 'fake-api'],
+    ]);
+    return PyResponse(200, 'OK', _pyFromJson(payload), headers, url);
   }
 
   dynamic _pyFromJson(dynamic v) {
