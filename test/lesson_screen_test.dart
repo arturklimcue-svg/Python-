@@ -221,12 +221,14 @@ void main() {
     await tester.enterText(
         find.byType(TextField), 'print("Hello, world!")');
     await tester.pump();
+    await tester.ensureVisible(find.text('Запустить'));
     await tester.tap(find.text('Запустить'));
     await tester.pump();
 
     expect(find.text('Вывод программы'), findsOneWidget);
     expect(find.textContaining('Hello, world!'), findsWidgets);
 
+    await tester.ensureVisible(find.text('Проверить'));
     await tester.tap(find.text('Проверить'));
     await tester.pump();
 

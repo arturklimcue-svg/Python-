@@ -17,7 +17,7 @@ void main() {
     var skipped = 0;
     final failures = <String>[];
     for (final row in rows) {
-      if (row['skip'] == true) {
+      if (row['skip'] != null) {
         skipped++;
         continue;
       }
