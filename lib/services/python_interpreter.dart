@@ -25,8 +25,11 @@ class PyRunResult {
 }
 
 /// Runs a Python-subset program synchronously.
-PyRunResult runPython(String code, {String stdin = ''}) {
-  final interp = _Interp(stdin);
+///
+/// [seed] задаёт зерно генератора `random` (для воспроизводимых прогонов).
+/// Если не указано, зерно берётся случайным — как в настоящем Python.
+PyRunResult runPython(String code, {String stdin = '', int? seed}) {
+  final interp = _Interp(stdin, seed);
   try {
     final tokens = _Lexer(code).tokenize();
     final program = _Parser(tokens).parseProgram();
@@ -44,8 +47,9 @@ PyRunResult runPython(String code, {String stdin = ''}) {
 
 /// Runs a Python-subset program on a background isolate so the UI stays
 /// responsive even for long or infinite loops. Result is sendable.
-Future<PyRunResult> runPythonAsync(String code, {String stdin = ''}) {
-  return Isolate.run(() => runPython(code, stdin: stdin));
+Future<PyRunResult> runPythonAsync(String code,
+    {String stdin = '', int? seed}) {
+  return Isolate.run(() => runPython(code, stdin: stdin, seed: seed));
 }
 
 // ---------------------------------------------------------------------------
@@ -1481,11 +1485,12 @@ class _Interp {
   late final DateTime _start;
   int _ops = 0;
   final Map<String, PyNamespace> _modules = {};
-  final math.Random _rng = math.Random(20240607);
+  math.Random _rng;
   _Scope? currentClassScope;
   final List<PyClass> _classStack = [];
 
-  _Interp(String stdin) : _stdin = _splitStdin(stdin) {
+  _Interp(String stdin, [int? seed]) : _stdin = _splitStdin(stdin),
+        _rng = math.Random(seed) {
     _start = DateTime.now();
     global = _Scope(null);
   }
@@ -2958,6 +2963,10 @@ class _Interp {
         break;
       case 'random':
         ns = PyNamespace('random', {
+          'seed': PyBuiltin('seed', (a, k) {
+            _rng = a.isEmpty ? math.Random() : math.Random(_asInt(a[0]));
+            return pyNone;
+          }),
           'choice': PyBuiltin('choice', (a, k) {
             final items = _iterate(a[0]);
             if (items.isEmpty) throw PyError('Cannot choose from an empty sequence');

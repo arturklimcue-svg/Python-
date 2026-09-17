@@ -50,7 +50,8 @@ void main() {
           final task = exercise.task!;
           if (task.type != TaskType.codeEditor) continue;
           checked++;
-          final result = runPython(task.solution, stdin: task.stdin);
+          final result =
+              runPython(task.solution, stdin: task.stdin, seed: 20240607);
           expect(result.ok, isTrue, reason: '${lesson.id}: ${result.error}');
           expect(
             task.checkEditorOutput(result.stdout),
@@ -129,5 +130,24 @@ void main() {
 
     final empty = runPython('a = input()', stdin: '');
     expect(empty.inputsMissing, 1);
+  });
+
+  test('random по умолчанию разный от запуска к запуску', () {
+    const code =
+        'import random\nprint(random.choice(["a", "b", "c", "d", "e"]))';
+    final values = <String>{for (var i = 0; i < 40; i++) runPython(code).stdout};
+    expect(values.length, greaterThan(1));
+  });
+
+  test('seed и random.seed делают вывод воспроизводимым', () {
+    const code = 'import random\nprint(random.choice(["a", "b", "c", "d"]))';
+    expect(runPython(code, seed: 42).stdout, runPython(code, seed: 42).stdout);
+
+    const seeded =
+        'import random\nrandom.seed(7)\nprint(random.randint(1, 100))';
+    final a = runPython(seeded).stdout;
+    final b = runPython(seeded).stdout;
+    expect(a, b);
+    expect(a, isNotEmpty);
   });
 }
