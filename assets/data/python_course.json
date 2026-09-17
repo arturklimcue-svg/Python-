@@ -150,7 +150,8 @@
        "kind": "theory",
        "text": "Итог урока:\n• print() — вывод на экран;\n• строки живут в кавычках;\n• несколько значений — через запятую;\n• # — комментарий."
       }
-     ]
+     ],
+     "id": "m1-l1"
     },
     {
      "type": "lesson",
@@ -294,7 +295,8 @@
        "kind": "theory",
        "text": "Итог урока:\n• переменная хранит значение;\n• знак = присваивает значение;\n• имя слева, значение справа;\n• регистр букв имеет значение."
       }
-     ]
+     ],
+     "id": "m1-l2"
     },
     {
      "type": "lesson",
@@ -436,7 +438,8 @@
        "kind": "theory",
        "text": "Итог урока:\n• переменные переиспользуют значения;\n• с ними можно считать;\n• строки склеиваются знаком +;\n• используй понятные имена."
       }
-     ]
+     ],
+     "id": "m1-l3"
     },
     {
      "type": "lesson",
@@ -590,7 +593,8 @@
        "kind": "theory",
        "text": "Итог урока:\n• bool — тип True / False;\n• сравнения возвращают bool;\n• == равенство, != неравенство;\n• >, <, >=, <= — сравнение."
       }
-     ]
+     ],
+     "id": "m1-l4"
     },
     {
      "type": "lesson",
@@ -750,7 +754,8 @@
        "kind": "theory",
        "text": "Итог урока:\n• == проверяет равенство;\n• != — неравенство;\n• сравнение возвращает True или False."
       }
-     ]
+     ],
+     "id": "m1-l5"
     },
     {
      "type": "lesson",
@@ -866,7 +871,593 @@
        "kind": "theory",
        "text": "Итог урока:\n• f-строки начинаются с буквы f;\n• переменная подставляется в фигурных скобках;\n• внутри {} можно считать выражения."
       }
-     ]
+     ],
+     "id": "m1-l6"
+    },
+    {
+     "type": "lesson",
+     "title": "Сравнение чисел",
+     "xp": 15,
+     "exercises": [
+      {
+       "kind": "theory",
+       "text": "Сравнение чисел — основа любых «решений» в программе: поступки кода зависят от того, какое сравнение выполнилось.",
+       "code": "print(4 > 3)"
+      },
+      {
+       "kind": "theory_task",
+       "text": "",
+       "task": {
+        "type": "code_output",
+        "question": "Что выведет этот код?",
+        "options": [
+         "False",
+         "True",
+         "Ошибка"
+        ],
+        "correct": [
+         0
+        ],
+        "explanation": "10 не меньше 2, поэтому результат False."
+       },
+       "code": "print(10 < 2)"
+      },
+      {
+       "kind": "theory",
+       "text": "Оператор >= означает «больше ИЛИ равно». True, если хотя бы одно условие выполнено.",
+       "code": "print(5 >= 5)"
+      },
+      {
+       "kind": "theory_task",
+       "text": "",
+       "task": {
+        "type": "code_output",
+        "question": "Что выведет этот код?",
+        "options": [
+         "True",
+         "False",
+         "Ошибка"
+        ],
+        "correct": [
+         0
+        ],
+        "explanation": "5 равно 5, а «больше или равно» разрешает равенство — True."
+       },
+       "code": "print(5 >= 5)"
+      },
+      {
+       "kind": "theory_task",
+       "text": "print(7 >= 8) выведет True.",
+       "task": {
+        "type": "tf",
+        "question": "Верно ли это утверждение?",
+        "correct_bool": false,
+        "explanation": "7 не больше и не равно 8, поэтому результат False."
+       }
+      },
+      {
+       "kind": "theory",
+       "text": "С отрицательными числами сравнения работают так же.",
+       "code": "print(-5 < 0)"
+      },
+      {
+       "kind": "theory_task",
+       "text": "",
+       "task": {
+        "type": "code_output",
+        "question": "Что выведет этот код?",
+        "options": [
+         "True",
+         "False",
+         "Ошибка"
+        ],
+        "correct": [
+         0
+        ],
+        "explanation": "-5 действительно меньше 0, ответ True."
+       },
+       "code": "print(-5 < 0)"
+      },
+      {
+       "kind": "theory",
+       "text": "Сравнивать можно результаты вычислений — Python сначала посчитает, потом сравнит.",
+       "code": "print(2 * 3 == 6)"
+      },
+      {
+       "kind": "theory_task",
+       "text": "",
+       "task": {
+        "type": "code_output",
+        "question": "Что выведет этот код?",
+        "options": [
+         "True",
+         "False",
+         "Ошибка"
+        ],
+        "correct": [
+         0
+        ],
+        "explanation": "2 × 3 = 6, и 6 == 6 — это правда."
+       },
+       "code": "print(2 * 3 == 6)"
+      },
+      {
+       "kind": "theory_task",
+       "text": "",
+       "task": {
+        "type": "code_output",
+        "question": "Что выведет этот код?",
+        "options": [
+         "True",
+         "False",
+         "Ошибка"
+        ],
+        "correct": [
+         0
+        ],
+        "explanation": "10 поделить на 2 = 5.0, а 5.0 равно 5 — True."
+       },
+       "code": "print(10 / 2 == 5)"
+      },
+      {
+       "kind": "theory",
+       "text": "Знаки сравнения можно запомнить так: > — больше, < — меньше, >= — больше или равно, <= — меньше или равно."
+      },
+      {
+       "kind": "theory_task",
+       "text": "",
+       "task": {
+        "type": "code_output",
+        "question": "Что выведет этот код?",
+        "options": [
+         "True",
+         "False",
+         "Ошибка"
+        ],
+        "correct": [
+         0
+        ],
+        "explanation": "100 больше 90 — True."
+       },
+       "code": "score = 100\nprint(score > 90)"
+      },
+      {
+       "kind": "theory_task",
+       "text": "Подставь знак, чтобы получить True.\nprint(100 _ 99)",
+       "task": {
+        "type": "fill",
+        "question": "Какой знак пропущен?",
+        "fill_before": "print(100 ",
+        "fill_after": " 99)",
+        "answers": [
+         ">",
+         ">=",
+         "!="
+        ],
+        "explanation": "100 больше 99, поэтому подойдёт знак > (или >=, !=)."
+       }
+      },
+      {
+       "kind": "theory",
+       "text": "Итог урока:\n• >, <, >=, <= сравнивают числа;\n• сравнения возвращают True/False;\n• сначала вычисляется выражение, потом сравнение."
+      }
+     ],
+     "id": "m1-l7"
+    },
+    {
+     "type": "lesson",
+     "title": "Сравнение строк",
+     "xp": 15,
+     "exercises": [
+      {
+       "kind": "theory",
+       "text": "Строки тоже можно сравнивать! Равенство проверяется так же, как для чисел.",
+       "code": "print(\"apple\" == \"apple\")"
+      },
+      {
+       "kind": "theory_task",
+       "text": "",
+       "task": {
+        "type": "code_output",
+        "question": "Что выведет этот код?",
+        "options": [
+         "True",
+         "False",
+         "\"apple\""
+        ],
+        "correct": [
+         0
+        ],
+        "explanation": "Строки полностью совпадают, поэтому == возвращает True."
+       },
+       "code": "print(\"apple\" == \"apple\")"
+      },
+      {
+       "kind": "theory",
+       "text": "Важно: Python различает регистр. «Python» и «python» — разные строки.",
+       "code": "print(\"Python\" == \"python\")"
+      },
+      {
+       "kind": "theory_task",
+       "text": "Строки «Python» и «python» равны.",
+       "task": {
+        "type": "tf",
+        "question": "Верно ли это утверждение?",
+        "correct_bool": false,
+        "explanation": "Python различает регистр: большая буква П меняет строку."
+       }
+      },
+      {
+       "kind": "theory",
+       "text": "Строки можно сравнивать на «больше» и «меньше» — тогда они сравниваются по алфавиту.",
+       "code": "print(\"b\" > \"a\")"
+      },
+      {
+       "kind": "theory_task",
+       "text": "",
+       "task": {
+        "type": "code_output",
+        "question": "Что выведет этот код?",
+        "options": [
+         "True",
+         "False",
+         "Ошибка"
+        ],
+        "correct": [
+         0
+        ],
+        "explanation": "Буква b идёт в алфавите после a, значит b > a — True."
+       },
+       "code": "print(\"b\" > \"a\")"
+      },
+      {
+       "kind": "theory",
+       "text": "Числа в кавычках — это строки, а не числа. Поэтому «5» и 5 — разные вещи.",
+       "code": "print(\"5\" == 5)"
+      },
+      {
+       "kind": "theory_task",
+       "text": "",
+       "task": {
+        "type": "code_output",
+        "question": "Что выведет этот код?",
+        "options": [
+         "False",
+         "True",
+         "Ошибка"
+        ],
+        "correct": [
+         0
+        ],
+        "explanation": "Строка \"5\" и число 5 относятся к разным типам — они не равны."
+       },
+       "code": "print(\"5\" == 5)"
+      },
+      {
+       "kind": "theory_task",
+       "text": "",
+       "task": {
+        "type": "code_output",
+        "question": "Что выведет этот код?",
+        "options": [
+         "True",
+         "False",
+         "Кодик"
+        ],
+        "correct": [
+         0
+        ],
+        "explanation": "Склейка «Ко» и «дик» даёт «Кодик», а оно равно «Кодик» — True."
+       },
+       "code": "print(\"Ко\" + \"дик\" == \"Кодик\")"
+      },
+      {
+       "kind": "theory",
+       "text": "Помнить о типе важно: «10» + «20» даст «1020», ведь это строки, а не числа.",
+       "code": "print(\"10\" + \"20\")"
+      },
+      {
+       "kind": "theory_task",
+       "text": "",
+       "task": {
+        "type": "code_output",
+        "question": "Что выведет этот код?",
+        "options": [
+         "1020",
+         "30",
+         "Ошибка",
+         "10 20"
+        ],
+        "correct": [
+         0
+        ],
+        "explanation": "Для строк + — это склейка: «10» + «20» = «1020»."
+       },
+       "code": "print(\"10\" + \"20\")"
+      },
+      {
+       "kind": "theory",
+       "text": "Итог урока:\n• строки сравниваются == и !=;\n• регистр букв важен;\n• «числа в кавычках» — это строки."
+      }
+     ],
+     "id": "m1-l8"
+    },
+    {
+     "type": "lesson",
+     "title": "Типы данных",
+     "xp": 15,
+     "exercises": [
+      {
+       "kind": "theory",
+       "text": "Каждое значение в Python относится к какому-то типу. Самые частые: int — целые числа, float — числа с точкой, str — строки, bool — True/False."
+      },
+      {
+       "kind": "theory",
+       "text": "Узнать тип значения можно функцией type().",
+       "code": "x = 5\nprint(type(x))"
+      },
+      {
+       "kind": "theory_task",
+       "text": "",
+       "task": {
+        "type": "code_output",
+        "question": "Что выведет этот код?",
+        "options": [
+         "<class 'int'>",
+         "<class 'str'>",
+         "5"
+        ],
+        "correct": [
+         0
+        ],
+        "explanation": "5 — целое число, его тип называется int."
+       },
+       "code": "x = 5\nprint(type(x))"
+      },
+      {
+       "kind": "theory_task",
+       "text": "",
+       "task": {
+        "type": "code_output",
+        "question": "Что выведет этот код?",
+        "options": [
+         "<class 'float'>",
+         "<class 'int'>",
+         "<class 'str'>"
+        ],
+        "correct": [
+         0
+        ],
+        "explanation": "Число с точкой относится к типу float."
+       },
+       "code": "x = 2.5\nprint(type(x))"
+      },
+      {
+       "kind": "theory_task",
+       "text": "",
+       "task": {
+        "type": "code_output",
+        "question": "Что выведет этот код?",
+        "options": [
+         "<class 'str'>",
+         "<class 'int'>",
+         "Ошибка"
+        ],
+        "correct": [
+         0
+        ],
+        "explanation": "Текст в кавычках — это строка, тип str."
+       },
+       "code": "x = \"Привет\"\nprint(type(x))"
+      },
+      {
+       "kind": "theory_task",
+       "text": "",
+       "task": {
+        "type": "code_output",
+        "question": "Что выведет этот код?",
+        "options": [
+         "<class 'bool'>",
+         "<class 'str'>",
+         "True"
+        ],
+        "correct": [
+         0
+        ],
+        "explanation": "True относится к булевому типу bool."
+       },
+       "code": "x = True\nprint(type(x))"
+      },
+      {
+       "kind": "theory",
+       "text": "Часто нужно превратить строку в число. Для этого служит int().",
+       "code": "print(int(\"10\") + 5)"
+      },
+      {
+       "kind": "theory_task",
+       "text": "",
+       "task": {
+        "type": "code_output",
+        "question": "Что выведет этот код?",
+        "options": [
+         "15",
+         "105",
+         "Ошибка"
+        ],
+        "correct": [
+         0
+        ],
+        "explanation": "int(\"10\") превращает строку в число 10, и 10 + 5 = 15."
+       },
+       "code": "print(int(\"10\") + 5)"
+      },
+      {
+       "kind": "theory",
+       "text": "Обратное превращение — в строку — делает str().",
+       "code": "print(str(100) + \"!\")"
+      },
+      {
+       "kind": "theory_task",
+       "text": "",
+       "task": {
+        "type": "code_output",
+        "question": "Что выведет этот код?",
+        "options": [
+         "100!",
+         "101",
+         "100 !"
+        ],
+        "correct": [
+         0
+        ],
+        "explanation": "str(100) даёт строку \"100\", и она склеивается с \"!\" в \"100!\"."
+       },
+       "code": "print(str(100) + \"!\")"
+      },
+      {
+       "kind": "theory",
+       "text": "float() превращает значение в число с точкой.",
+       "code": "print(float(\"3.5\") + 1)"
+      },
+      {
+       "kind": "theory_task",
+       "text": "",
+       "task": {
+        "type": "code_output",
+        "question": "Что выведет этот код?",
+        "options": [
+         "20",
+         "128",
+         "Ошибка"
+        ],
+        "correct": [
+         0
+        ],
+        "explanation": "int(\"12\") превращает строку в 12, складываем с 8 — получаем 20."
+       },
+       "code": "total = \"12\"\nprint(int(total) + 8)"
+      },
+      {
+       "kind": "theory",
+       "text": "Итог урока:\n• int — целые числа;\n• float — числа с точкой;\n• str — строки;\n• bool — True/False;\n• int(), float(), str() превращают типы."
+      }
+     ],
+     "id": "m1-l9"
+    },
+    {
+     "type": "lesson",
+     "title": "Input",
+     "xp": 15,
+     "exercises": [
+      {
+       "kind": "theory",
+       "text": "Пока программа только выводила данные. Но настоящие программы ещё и получают данные от пользователя. За это отвечает input().",
+       "code": "name = input(\"Как тебя зовут? \")"
+      },
+      {
+       "kind": "theory_task",
+       "text": "",
+       "task": {
+        "type": "single",
+        "question": "Что делает input()?",
+        "options": [
+         "Получает текст от пользователя",
+         "Выводит текст на экран",
+         "Создаёт файл"
+        ],
+        "correct": [
+         0
+        ],
+        "explanation": "input() ждёт, пока пользователь введёт текст и нажмёт Enter, и возвращает его."
+       }
+      },
+      {
+       "kind": "theory",
+       "text": "Важно: input() всегда возвращает строку (str), даже если пользователь ввёл число.",
+       "code": "age = input(\"Сколько тебе лет? \")"
+      },
+      {
+       "kind": "theory_task",
+       "text": "",
+       "task": {
+        "type": "single",
+        "question": "Какой тип всегда возвращает input()?",
+        "options": [
+         "Строка (str)",
+         "Число (int)",
+         "Булево значение (bool)"
+        ],
+        "correct": [
+         0
+        ],
+        "explanation": "input() всегда возвращает строку. Число из неё надо превращать отдельно."
+       }
+      },
+      {
+       "kind": "theory_task",
+       "text": "",
+       "task": {
+        "type": "code_output",
+        "question": "Что выведет код, если ввести «Рома»?",
+        "options": [
+         "Привет, Рома!",
+         "Привет, {name}!",
+         "Привет, Рома"
+        ],
+        "correct": [
+         0
+        ],
+        "explanation": "Значение из input() попадает в переменную name и подставляется в f-строку."
+       },
+       "code": "name = input()\nprint(f\"Привет, {name}!\")"
+      },
+      {
+       "kind": "theory",
+       "text": "Чтобы посчитать, что ввёл пользователь, преврати строку в число функцией int().",
+       "code": "n = int(input(\"Число: \"))\nprint(n + 1)"
+      },
+      {
+       "kind": "theory_task",
+       "text": "",
+       "task": {
+        "type": "single",
+        "question": "Зачем писать int(input())?",
+        "options": [
+         "Чтобы превратить строку в число",
+         "Чтобы превратить число в строку",
+         "Чтобы вывести ввод на экран"
+        ],
+        "correct": [
+         0
+        ],
+        "explanation": "input() даёт строку, а int() делает из неё число для вычислений."
+       }
+      },
+      {
+       "kind": "theory",
+       "text": "Полный пример: пользователь вводит имя и возраст, программа приветствует его.",
+       "code": "name = input(\"Имя: \")\nage = input(\"Возраст: \")\nprint(f\"Тебя зовут {name}, тебе {age} лет!\")"
+      },
+      {
+       "kind": "theory_task",
+       "text": "Сделай так, чтобы программа прочитала имя пользователя.\nname = _(\"Твоё имя: \")",
+       "task": {
+        "type": "fill",
+        "question": "Какая функция пропущена?",
+        "fill_before": "name = ",
+        "fill_after": "(\"Твоё имя: \")",
+        "answers": [
+         "input"
+        ],
+        "explanation": "Чтение ввода с клавиатуры выполняет функция input()."
+       }
+      },
+      {
+       "kind": "theory",
+       "text": "Итог урока:\n• input() получает ввод пользователя;\n• всегда возвращает строку;\n• int() превращает строку в число для расчётов."
+      }
+     ],
+     "id": "m1-l10"
     },
     {
      "type": "practice",
@@ -1093,588 +1684,8 @@
         ]
        }
       }
-     ]
-    },
-    {
-     "type": "lesson",
-     "title": "Сравнение чисел",
-     "xp": 15,
-     "exercises": [
-      {
-       "kind": "theory",
-       "text": "Сравнение чисел — основа любых «решений» в программе: поступки кода зависят от того, какое сравнение выполнилось.",
-       "code": "print(4 > 3)"
-      },
-      {
-       "kind": "theory_task",
-       "text": "",
-       "task": {
-        "type": "code_output",
-        "question": "Что выведет этот код?",
-        "options": [
-         "False",
-         "True",
-         "Ошибка"
-        ],
-        "correct": [
-         0
-        ],
-        "explanation": "10 не меньше 2, поэтому результат False."
-       },
-       "code": "print(10 < 2)"
-      },
-      {
-       "kind": "theory",
-       "text": "Оператор >= означает «больше ИЛИ равно». True, если хотя бы одно условие выполнено.",
-       "code": "print(5 >= 5)"
-      },
-      {
-       "kind": "theory_task",
-       "text": "",
-       "task": {
-        "type": "code_output",
-        "question": "Что выведет этот код?",
-        "options": [
-         "True",
-         "False",
-         "Ошибка"
-        ],
-        "correct": [
-         0
-        ],
-        "explanation": "5 равно 5, а «больше или равно» разрешает равенство — True."
-       },
-       "code": "print(5 >= 5)"
-      },
-      {
-       "kind": "theory_task",
-       "text": "print(7 >= 8) выведет True.",
-       "task": {
-        "type": "tf",
-        "question": "Верно ли это утверждение?",
-        "correct_bool": false,
-        "explanation": "7 не больше и не равно 8, поэтому результат False."
-       }
-      },
-      {
-       "kind": "theory",
-       "text": "С отрицательными числами сравнения работают так же.",
-       "code": "print(-5 < 0)"
-      },
-      {
-       "kind": "theory_task",
-       "text": "",
-       "task": {
-        "type": "code_output",
-        "question": "Что выведет этот код?",
-        "options": [
-         "True",
-         "False",
-         "Ошибка"
-        ],
-        "correct": [
-         0
-        ],
-        "explanation": "-5 действительно меньше 0, ответ True."
-       },
-       "code": "print(-5 < 0)"
-      },
-      {
-       "kind": "theory",
-       "text": "Сравнивать можно результаты вычислений — Python сначала посчитает, потом сравнит.",
-       "code": "print(2 * 3 == 6)"
-      },
-      {
-       "kind": "theory_task",
-       "text": "",
-       "task": {
-        "type": "code_output",
-        "question": "Что выведет этот код?",
-        "options": [
-         "True",
-         "False",
-         "Ошибка"
-        ],
-        "correct": [
-         0
-        ],
-        "explanation": "2 × 3 = 6, и 6 == 6 — это правда."
-       },
-       "code": "print(2 * 3 == 6)"
-      },
-      {
-       "kind": "theory_task",
-       "text": "",
-       "task": {
-        "type": "code_output",
-        "question": "Что выведет этот код?",
-        "options": [
-         "True",
-         "False",
-         "Ошибка"
-        ],
-        "correct": [
-         0
-        ],
-        "explanation": "10 поделить на 2 = 5.0, а 5.0 равно 5 — True."
-       },
-       "code": "print(10 / 2 == 5)"
-      },
-      {
-       "kind": "theory",
-       "text": "Знаки сравнения можно запомнить так: > — больше, < — меньше, >= — больше или равно, <= — меньше или равно."
-      },
-      {
-       "kind": "theory_task",
-       "text": "",
-       "task": {
-        "type": "code_output",
-        "question": "Что выведет этот код?",
-        "options": [
-         "True",
-         "False",
-         "Ошибка"
-        ],
-        "correct": [
-         0
-        ],
-        "explanation": "100 больше 90 — True."
-       },
-       "code": "score = 100\nprint(score > 90)"
-      },
-      {
-       "kind": "theory_task",
-       "text": "Подставь знак, чтобы получить True.\nprint(100 _ 99)",
-       "task": {
-        "type": "fill",
-        "question": "Какой знак пропущен?",
-        "fill_before": "print(100 ",
-        "fill_after": " 99)",
-        "answers": [
-         ">",
-         ">=",
-         "!="
-        ],
-        "explanation": "100 больше 99, поэтому подойдёт знак > (или >=, !=)."
-       }
-      },
-      {
-       "kind": "theory",
-       "text": "Итог урока:\n• >, <, >=, <= сравнивают числа;\n• сравнения возвращают True/False;\n• сначала вычисляется выражение, потом сравнение."
-      }
-     ]
-    },
-    {
-     "type": "lesson",
-     "title": "Сравнение строк",
-     "xp": 15,
-     "exercises": [
-      {
-       "kind": "theory",
-       "text": "Строки тоже можно сравнивать! Равенство проверяется так же, как для чисел.",
-       "code": "print(\"apple\" == \"apple\")"
-      },
-      {
-       "kind": "theory_task",
-       "text": "",
-       "task": {
-        "type": "code_output",
-        "question": "Что выведет этот код?",
-        "options": [
-         "True",
-         "False",
-         "\"apple\""
-        ],
-        "correct": [
-         0
-        ],
-        "explanation": "Строки полностью совпадают, поэтому == возвращает True."
-       },
-       "code": "print(\"apple\" == \"apple\")"
-      },
-      {
-       "kind": "theory",
-       "text": "Важно: Python различает регистр. «Python» и «python» — разные строки.",
-       "code": "print(\"Python\" == \"python\")"
-      },
-      {
-       "kind": "theory_task",
-       "text": "Строки «Python» и «python» равны.",
-       "task": {
-        "type": "tf",
-        "question": "Верно ли это утверждение?",
-        "correct_bool": false,
-        "explanation": "Python различает регистр: большая буква П меняет строку."
-       }
-      },
-      {
-       "kind": "theory",
-       "text": "Строки можно сравнивать на «больше» и «меньше» — тогда они сравниваются по алфавиту.",
-       "code": "print(\"b\" > \"a\")"
-      },
-      {
-       "kind": "theory_task",
-       "text": "",
-       "task": {
-        "type": "code_output",
-        "question": "Что выведет этот код?",
-        "options": [
-         "True",
-         "False",
-         "Ошибка"
-        ],
-        "correct": [
-         0
-        ],
-        "explanation": "Буква b идёт в алфавите после a, значит b > a — True."
-       },
-       "code": "print(\"b\" > \"a\")"
-      },
-      {
-       "kind": "theory",
-       "text": "Числа в кавычках — это строки, а не числа. Поэтому «5» и 5 — разные вещи.",
-       "code": "print(\"5\" == 5)"
-      },
-      {
-       "kind": "theory_task",
-       "text": "",
-       "task": {
-        "type": "code_output",
-        "question": "Что выведет этот код?",
-        "options": [
-         "False",
-         "True",
-         "Ошибка"
-        ],
-        "correct": [
-         0
-        ],
-        "explanation": "Строка \"5\" и число 5 относятся к разным типам — они не равны."
-       },
-       "code": "print(\"5\" == 5)"
-      },
-      {
-       "kind": "theory_task",
-       "text": "",
-       "task": {
-        "type": "code_output",
-        "question": "Что выведет этот код?",
-        "options": [
-         "True",
-         "False",
-         "Кодик"
-        ],
-        "correct": [
-         0
-        ],
-        "explanation": "Склейка «Ко» и «дик» даёт «Кодик», а оно равно «Кодик» — True."
-       },
-       "code": "print(\"Ко\" + \"дик\" == \"Кодик\")"
-      },
-      {
-       "kind": "theory",
-       "text": "Помнить о типе важно: «10» + «20» даст «1020», ведь это строки, а не числа.",
-       "code": "print(\"10\" + \"20\")"
-      },
-      {
-       "kind": "theory_task",
-       "text": "",
-       "task": {
-        "type": "code_output",
-        "question": "Что выведет этот код?",
-        "options": [
-         "1020",
-         "30",
-         "Ошибка",
-         "10 20"
-        ],
-        "correct": [
-         0
-        ],
-        "explanation": "Для строк + — это склейка: «10» + «20» = «1020»."
-       },
-       "code": "print(\"10\" + \"20\")"
-      },
-      {
-       "kind": "theory",
-       "text": "Итог урока:\n• строки сравниваются == и !=;\n• регистр букв важен;\n• «числа в кавычках» — это строки."
-      }
-     ]
-    },
-    {
-     "type": "lesson",
-     "title": "Типы данных",
-     "xp": 15,
-     "exercises": [
-      {
-       "kind": "theory",
-       "text": "Каждое значение в Python относится к какому-то типу. Самые частые: int — целые числа, float — числа с точкой, str — строки, bool — True/False."
-      },
-      {
-       "kind": "theory",
-       "text": "Узнать тип значения можно функцией type().",
-       "code": "x = 5\nprint(type(x))"
-      },
-      {
-       "kind": "theory_task",
-       "text": "",
-       "task": {
-        "type": "code_output",
-        "question": "Что выведет этот код?",
-        "options": [
-         "<class 'int'>",
-         "<class 'str'>",
-         "5"
-        ],
-        "correct": [
-         0
-        ],
-        "explanation": "5 — целое число, его тип называется int."
-       },
-       "code": "x = 5\nprint(type(x))"
-      },
-      {
-       "kind": "theory_task",
-       "text": "",
-       "task": {
-        "type": "code_output",
-        "question": "Что выведет этот код?",
-        "options": [
-         "<class 'float'>",
-         "<class 'int'>",
-         "<class 'str'>"
-        ],
-        "correct": [
-         0
-        ],
-        "explanation": "Число с точкой относится к типу float."
-       },
-       "code": "x = 2.5\nprint(type(x))"
-      },
-      {
-       "kind": "theory_task",
-       "text": "",
-       "task": {
-        "type": "code_output",
-        "question": "Что выведет этот код?",
-        "options": [
-         "<class 'str'>",
-         "<class 'int'>",
-         "Ошибка"
-        ],
-        "correct": [
-         0
-        ],
-        "explanation": "Текст в кавычках — это строка, тип str."
-       },
-       "code": "x = \"Привет\"\nprint(type(x))"
-      },
-      {
-       "kind": "theory_task",
-       "text": "",
-       "task": {
-        "type": "code_output",
-        "question": "Что выведет этот код?",
-        "options": [
-         "<class 'bool'>",
-         "<class 'str'>",
-         "True"
-        ],
-        "correct": [
-         0
-        ],
-        "explanation": "True относится к булевому типу bool."
-       },
-       "code": "x = True\nprint(type(x))"
-      },
-      {
-       "kind": "theory",
-       "text": "Часто нужно превратить строку в число. Для этого служит int().",
-       "code": "print(int(\"10\") + 5)"
-      },
-      {
-       "kind": "theory_task",
-       "text": "",
-       "task": {
-        "type": "code_output",
-        "question": "Что выведет этот код?",
-        "options": [
-         "15",
-         "105",
-         "Ошибка"
-        ],
-        "correct": [
-         0
-        ],
-        "explanation": "int(\"10\") превращает строку в число 10, и 10 + 5 = 15."
-       },
-       "code": "print(int(\"10\") + 5)"
-      },
-      {
-       "kind": "theory",
-       "text": "Обратное превращение — в строку — делает str().",
-       "code": "print(str(100) + \"!\")"
-      },
-      {
-       "kind": "theory_task",
-       "text": "",
-       "task": {
-        "type": "code_output",
-        "question": "Что выведет этот код?",
-        "options": [
-         "100!",
-         "101",
-         "100 !"
-        ],
-        "correct": [
-         0
-        ],
-        "explanation": "str(100) даёт строку \"100\", и она склеивается с \"!\" в \"100!\"."
-       },
-       "code": "print(str(100) + \"!\")"
-      },
-      {
-       "kind": "theory",
-       "text": "float() превращает значение в число с точкой.",
-       "code": "print(float(\"3.5\") + 1)"
-      },
-      {
-       "kind": "theory_task",
-       "text": "",
-       "task": {
-        "type": "code_output",
-        "question": "Что выведет этот код?",
-        "options": [
-         "20",
-         "128",
-         "Ошибка"
-        ],
-        "correct": [
-         0
-        ],
-        "explanation": "int(\"12\") превращает строку в 12, складываем с 8 — получаем 20."
-       },
-       "code": "total = \"12\"\nprint(int(total) + 8)"
-      },
-      {
-       "kind": "theory",
-       "text": "Итог урока:\n• int — целые числа;\n• float — числа с точкой;\n• str — строки;\n• bool — True/False;\n• int(), float(), str() превращают типы."
-      }
-     ]
-    },
-    {
-     "type": "lesson",
-     "title": "Input",
-     "xp": 15,
-     "exercises": [
-      {
-       "kind": "theory",
-       "text": "Пока программа только выводила данные. Но настоящие программы ещё и получают данные от пользователя. За это отвечает input().",
-       "code": "name = input(\"Как тебя зовут? \")"
-      },
-      {
-       "kind": "theory_task",
-       "text": "",
-       "task": {
-        "type": "single",
-        "question": "Что делает input()?",
-        "options": [
-         "Получает текст от пользователя",
-         "Выводит текст на экран",
-         "Создаёт файл"
-        ],
-        "correct": [
-         0
-        ],
-        "explanation": "input() ждёт, пока пользователь введёт текст и нажмёт Enter, и возвращает его."
-       }
-      },
-      {
-       "kind": "theory",
-       "text": "Важно: input() всегда возвращает строку (str), даже если пользователь ввёл число.",
-       "code": "age = input(\"Сколько тебе лет? \")"
-      },
-      {
-       "kind": "theory_task",
-       "text": "",
-       "task": {
-        "type": "single",
-        "question": "Какой тип всегда возвращает input()?",
-        "options": [
-         "Строка (str)",
-         "Число (int)",
-         "Булево значение (bool)"
-        ],
-        "correct": [
-         0
-        ],
-        "explanation": "input() всегда возвращает строку. Число из неё надо превращать отдельно."
-       }
-      },
-      {
-       "kind": "theory_task",
-       "text": "",
-       "task": {
-        "type": "code_output",
-        "question": "Что выведет код, если ввести «Рома»?",
-        "options": [
-         "Привет, Рома!",
-         "Привет, {name}!",
-         "Привет, Рома"
-        ],
-        "correct": [
-         0
-        ],
-        "explanation": "Значение из input() попадает в переменную name и подставляется в f-строку."
-       },
-       "code": "name = input()\nprint(f\"Привет, {name}!\")"
-      },
-      {
-       "kind": "theory",
-       "text": "Чтобы посчитать, что ввёл пользователь, преврати строку в число функцией int().",
-       "code": "n = int(input(\"Число: \"))\nprint(n + 1)"
-      },
-      {
-       "kind": "theory_task",
-       "text": "",
-       "task": {
-        "type": "single",
-        "question": "Зачем писать int(input())?",
-        "options": [
-         "Чтобы превратить строку в число",
-         "Чтобы превратить число в строку",
-         "Чтобы вывести ввод на экран"
-        ],
-        "correct": [
-         0
-        ],
-        "explanation": "input() даёт строку, а int() делает из неё число для вычислений."
-       }
-      },
-      {
-       "kind": "theory",
-       "text": "Полный пример: пользователь вводит имя и возраст, программа приветствует его.",
-       "code": "name = input(\"Имя: \")\nage = input(\"Возраст: \")\nprint(f\"Тебя зовут {name}, тебе {age} лет!\")"
-      },
-      {
-       "kind": "theory_task",
-       "text": "Сделай так, чтобы программа прочитала имя пользователя.\nname = _(\"Твоё имя: \")",
-       "task": {
-        "type": "fill",
-        "question": "Какая функция пропущена?",
-        "fill_before": "name = ",
-        "fill_after": "(\"Твоё имя: \")",
-        "answers": [
-         "input"
-        ],
-        "explanation": "Чтение ввода с клавиатуры выполняет функция input()."
-       }
-      },
-      {
-       "kind": "theory",
-       "text": "Итог урока:\n• input() получает ввод пользователя;\n• всегда возвращает строку;\n• int() превращает строку в число для расчётов."
-      }
-     ]
+     ],
+     "id": "m1-l11"
     }
    ]
   },
