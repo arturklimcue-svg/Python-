@@ -1,0 +1,19 @@
+name: kodik_python
+description: Настоящий CPython (Chaquopy) для приложения Кодик.
+version: 0.0.1
+publish_to: "none"
+
+environment:
+  sdk: ">=3.6.0 <4.0.0"
+  flutter: ">=3.3.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.arturklimcue.kodik_python
+        pluginClass: KodikPythonPlugin

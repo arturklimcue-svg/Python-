@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  kodik_python:
+    path: packages/kodik_python
   shared_preferences: ^2.3.5
   share_plus: ^10.1.2
   path_provider: ^2.1.5

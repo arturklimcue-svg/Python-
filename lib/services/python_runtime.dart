@@ -2,19 +2,19 @@ import 'dart:convert';
 import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter/services.dart';
+import 'package:kodik_python/kodik_python.dart';
 
 import 'python_interpreter.dart';
 
 /// Запуск Python-кода для приложения.
 ///
-/// На Android используется настоящий CPython (Chaquopy). Если он недоступен
-/// — например, в тестах или при сбое инициализации — автоматически берётся
-/// встроенный учебный интерпретатор, чтобы приложение продолжало работать.
+/// На Android используется настоящий CPython (плагин `kodik_python`).
+/// Если он недоступен — например, в тестах или при сбое инициализации —
+/// автоматически берётся встроенный учебный интерпретатор, чтобы приложение
+/// продолжало работать.
 class PythonRuntime {
   PythonRuntime._();
 
-  static const MethodChannel _channel = MethodChannel('kodik/python');
   static bool? _native;
 
   /// Доступен ли настоящий Python. Значение кэшируется.
@@ -22,21 +22,13 @@ class PythonRuntime {
     final cached = _native;
     if (cached != null) return cached;
     if (kIsWeb || !Platform.isAndroid) return _native = false;
-    try {
-      final result = await _channel.invokeMethod<bool>('available');
-      return _native = result ?? false;
-    } catch (_) {
-      return _native = false;
-    }
+    return _native = await KodikPython.available();
   }
 
   static Future<PyRunResult> run(String code, {String stdin = ''}) async {
     if (await usesNativePython) {
       try {
-        final raw = await _channel.invokeMethod<String>('run', {
-          'code': code,
-          'stdin': _splitStdin(stdin),
-        });
+        final raw = await KodikPython.run(code, _splitStdin(stdin));
         if (raw != null) {
           final map = jsonDecode(raw) as Map<String, dynamic>;
           return PyRunResult(
