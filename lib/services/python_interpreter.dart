@@ -1,6 +1,6 @@
 // Pure-Dart interpreter for the Python subset taught in the course.
 // No Flutter / dart:ui dependencies so it can run tests on any platform.
-// ignore_for_file: non_constant_identifier_names, prefer_final_locals
+// ignore_for_file: non_constant_identifier_names, prefer_final_locals, library_private_types_in_public_api
 import 'dart:convert' as convert;
 import 'dart:math' as math;
 
@@ -1251,7 +1251,7 @@ class _Parser {
         if (!_checkOp(':')) throw PyError('Ожидался ":" в lambda');
         _next();
         final body = _expression();
-        return LambdaExpr(params[0], params[1], body);
+        return LambdaExpr(params.$1, params.$2, body);
       }
       _next();
       return NameExpr(_mangle(t.v));
@@ -1354,7 +1354,7 @@ class _Parser {
     throw PyError('Неожиданный токен "${cur.v}"');
   }
 
-  List<dynamic> _lambdaParams() {
+  (List<String>, List<Expr?>) _lambdaParams() {
     final names = <String>[];
     final defaults = <Expr?>[];
     while (_check(_Tk.name)) {
@@ -1372,7 +1372,7 @@ class _Parser {
         break;
       }
     }
-    return [names, defaults];
+    return (names, defaults);
   }
 
   Expr _parseFString(String content) {
@@ -1882,7 +1882,8 @@ class _Interp {
     final seen = <PyClass>{};
     while (true) {
       if (c.methods.containsKey(name)) return c.methods[name];
-      if (c.classAttrs[name] is PyFunction) return c.classAttrs[name];
+      final attr = c.classAttrs[name];
+      if (attr is PyFunction) return attr;
       PyClass? next;
       for (final b in c.bases) {
         if (seen.add(b)) {
@@ -1941,7 +1942,8 @@ class _Interp {
     if (callee is PyBuiltin) return callee.fn(args, kwargs);
     if (callee is PyBoundBuiltin) return callee.fn(callee.target, args, kwargs);
     if (callee is PyBoundMethod) {
-      return _invokeFunction(callee.method, [callee.target, ...args], kwargs);
+      return _invokeFunction(
+          callee.method as PyFunction, [callee.target, ...args], kwargs);
     }
     if (callee is PyFunction) return _invokeFunction(callee, args, kwargs);
     if (callee is PyClass) {
@@ -2201,7 +2203,7 @@ class _Interp {
       case '+':
         if (l is num && r is num) {
           if (l is int && r is int) return l + r;
-          return (l as num).toDouble() + (r as num).toDouble();
+          return l.toDouble() + r.toDouble();
         }
         if (l is String && r is String) return l + r;
         if (l is PyList && r is PyList) return PyList([...l.items, ...r.items]);
@@ -2210,13 +2212,13 @@ class _Interp {
       case '-':
         if (l is int && r is int) return l - r;
         if (l is num && r is num) {
-          return (l as num).toDouble() - (r as num).toDouble();
+          return l.toDouble() - r.toDouble();
         }
         throw PyError('Неподдерживаемое вычитание');
       case '*':
         if (l is num && r is num) {
           if (l is int && r is int) return l * r;
-          return (l as num).toDouble() * (r as num).toDouble();
+          return l.toDouble() * r.toDouble();
         }
         if (l is String && r is int) return l * r;
         if (l is int && r is String) return r * l;
@@ -2237,23 +2239,23 @@ class _Interp {
         throw PyError('Неподдерживаемое умножение');
       case '/':
         if (l is num && r is num) {
-          if ((r as num) == 0) throw PyError('division by zero');
-          return (l as num).toDouble() / (r as num).toDouble();
+          if (r == 0) throw PyError('division by zero');
+          return l.toDouble() / r.toDouble();
         }
         throw PyError('Неподдерживаемое деление');
       case '//':
         if (l is num && r is num) {
-          if ((r as num) == 0) throw PyError('integer division or modulo by zero');
-          final q = ((l as num) / (r as num)).floor();
+          if (r == 0) throw PyError('integer division or modulo by zero');
+          final q = (l / r).floor();
           if (l is int && r is int) return q;
           return q.toDouble();
         }
         throw PyError('Неподдерживаемое целочисленное деление');
       case '%':
         if (l is num && r is num) {
-          if ((r as num) == 0) throw PyError('integer division or modulo by zero');
-          final a = (l as num).toDouble();
-          final b = (r as num).toDouble();
+          if (r == 0) throw PyError('integer division or modulo by zero');
+          final a = l.toDouble();
+          final b = r.toDouble();
           final m = a - b * (a / b).floor();
           if (l is int && r is int) return m.toInt();
           return m;
@@ -2268,7 +2270,7 @@ class _Interp {
             }
             return result;
           }
-          return math.pow((l as num).toDouble(), (r as num).toDouble());
+          return math.pow(l.toDouble(), r.toDouble());
         }
         throw PyError('Неподдерживаемая степень');
       default:
@@ -2653,11 +2655,6 @@ class _Interp {
   }
 
   // ---- methods ----
-  PyBuiltin _mb(String name,
-      dynamic Function(dynamic target, List<dynamic> args, Map<String, dynamic> kwargs) fn) {
-    return PyBuiltin(name, (args, kwargs) => fn(args[0], args.skip(1).toList(), kwargs));
-  }
-
   PyBuiltin? _stringMethod(String s, String name) {
     switch (name) {
       case 'capitalize':

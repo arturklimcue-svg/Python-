@@ -241,7 +241,7 @@ class _InputBar extends StatelessWidget {
                 textInputAction: TextInputAction.send,
                 decoration: InputDecoration(
                   hintText: 'Задай вопрос по Python...',
-                  hintStyle: TextStyle(color: AppColors.textMuted),
+                  hintStyle: const TextStyle(color: AppColors.textMuted),
                   filled: true,
                   fillColor: AppColors.background,
                   contentPadding:

@@ -413,11 +413,11 @@ class _TaskPanel extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 10),
+        const Padding(
+          padding: EdgeInsets.only(bottom: 10),
           child: Text(
             'Нажми на строки по очереди, чтобы собрать программу.',
-            style: const TextStyle(fontSize: 14, color: AppColors.textMuted),
+            style: TextStyle(fontSize: 14, color: AppColors.textMuted),
           ),
         ),
         for (var i = 0; i < task.options.length; i++)
