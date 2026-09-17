@@ -29,7 +29,7 @@ class PythonInputBar extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               const Icon(Icons.keyboard_alt_outlined,
                   size: 16, color: AppColors.accent),
