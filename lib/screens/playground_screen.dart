@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../services/python_interpreter.dart';
 import '../theme.dart';
+import '../widgets/python_input_bar.dart';
 import '../widgets/python_output_panel.dart';
 
 class PlaygroundScreen extends StatefulWidget {
@@ -13,21 +14,26 @@ class PlaygroundScreen extends StatefulWidget {
 
 class _PlaygroundScreenState extends State<PlaygroundScreen> {
   final _ctrl = TextEditingController(text: 'print("Привет, мир!")\n');
+  final _inputCtrl = TextEditingController();
+  List<String> _inputs = [];
   String? _output;
   String? _error;
   bool _ran = false;
   bool _running = false;
+  bool _needsInput = false;
 
   static const _examples = <String, String>{
     'Привет': 'print("Привет, мир!")\n',
     'Цикл': 'for i in range(5):\n    print(i)\n',
     'Список': 'nums = [3, 1, 2]\nprint(sorted(nums))\nprint(sum(nums))\n',
     'Функция': 'def greet(name):\n    return f"Привет, {name}!"\n\nprint(greet("Аня"))\n',
+    'Диалог': 'name = input("Как тебя зовут? ")\nprint(f"Привет, {name}!")\n',
   };
 
   @override
   void dispose() {
     _ctrl.dispose();
+    _inputCtrl.dispose();
     super.dispose();
   }
 
@@ -36,7 +42,7 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
     setState(() => _running = true);
     PyRunResult result;
     try {
-      result = await runPythonAsync(_ctrl.text);
+      result = await runPythonAsync(_ctrl.text, stdin: _inputs.join('\n'));
     } catch (e) {
       result = PyRunResult(false, '', 'Не удалось выполнить код: $e');
     }
@@ -45,8 +51,15 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
       _running = false;
       _ran = true;
       _output = result.stdout;
+      _needsInput = result.ok && result.inputsMissing > 0;
       _error = result.ok ? null : result.error;
     });
+  }
+
+  void _submitInput() {
+    _inputs.add(_inputCtrl.text);
+    _inputCtrl.clear();
+    _run();
   }
 
   @override
@@ -61,7 +74,8 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
         const SizedBox(height: 6),
         const Text(
           'Пиши любой код на Python и запускай прямо здесь — вывод появится '
-          'даже при ошибке.',
+          'даже при ошибке. Если программа спросит данные, впиши ответ и '
+          'нажми «Отправить».',
           style: TextStyle(color: AppColors.textMuted, height: 1.4),
         ),
         const SizedBox(height: 14),
@@ -74,6 +88,9 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
                 label: Text(entry.key),
                 onPressed: () => setState(() {
                   _ctrl.text = entry.value;
+                  _inputs = [];
+                  _inputCtrl.clear();
+                  _needsInput = false;
                   _output = null;
                   _error = null;
                   _ran = false;
@@ -124,6 +141,14 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
         if (_ran) ...[
           const SizedBox(height: 12),
           PythonOutputPanel(output: _output ?? '', error: _error),
+        ],
+        if (_ran && _needsInput && !_running) ...[
+          const SizedBox(height: 10),
+          PythonInputBar(
+            controller: _inputCtrl,
+            onSubmit: _submitInput,
+            onChanged: () => setState(() {}),
+          ),
         ],
       ],
     );

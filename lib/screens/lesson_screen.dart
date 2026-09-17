@@ -6,6 +6,7 @@ import '../services/progress_service.dart';
 import '../services/python_interpreter.dart';
 import '../theme.dart';
 import '../widgets/code_block.dart';
+import '../widgets/python_input_bar.dart';
 
 class LessonScreen extends StatefulWidget {
   final Lesson lesson;
@@ -29,7 +30,10 @@ class _LessonScreenState extends State<LessonScreen> {
   bool? _tfAnswer;
   late TextEditingController _fillCtrl;
   late TextEditingController _editorCtrl;
+  final TextEditingController _inputCtrl = TextEditingController();
   List<int> _buildOrder = [];
+  List<String> _editorInput = [];
+  bool _editorNeedsInput = false;
   String? _editorOutput;
   String? _editorError;
   bool _editorRan = false;
@@ -49,23 +53,44 @@ class _LessonScreenState extends State<LessonScreen> {
     _editorCtrl = TextEditingController(
       text: widget.lesson.exercises[_index].task?.starter ?? '',
     );
+    _resetEditorInput();
+  }
+
+  /// Готовые данные для input(): берём их из задания и позволяем дополнять
+  /// по шагам прямо в редакторе/Песочнице.
+  void _resetEditorInput() {
+    final stdin = _exercise.task?.stdin ?? '';
+    final lines = stdin.isEmpty ? <String>[] : stdin.split('\n');
+    while (lines.isNotEmpty && lines.last.isEmpty) {
+      lines.removeLast();
+    }
+    _editorInput = lines;
+    _editorNeedsInput = false;
+    _inputCtrl.clear();
   }
 
   @override
   void dispose() {
     _fillCtrl.dispose();
     _editorCtrl.dispose();
+    _inputCtrl.dispose();
     super.dispose();
   }
 
   void _runEditor() {
-    final task = _exercise.task!;
-    final result = runPython(_editorCtrl.text, stdin: task.stdin);
+    final result = runPython(_editorCtrl.text, stdin: _editorInput.join('\n'));
     setState(() {
       _editorRan = true;
       _editorOutput = result.stdout;
       _editorError = result.ok ? null : result.error;
+      _editorNeedsInput = result.ok && result.inputsMissing > 0;
     });
+  }
+
+  void _submitEditorInput() {
+    _editorInput.add(_inputCtrl.text);
+    _inputCtrl.clear();
+    _runEditor();
   }
 
   void _checkAnswer() {
@@ -85,10 +110,11 @@ class _LessonScreenState extends State<LessonScreen> {
       case TaskType.codeBuild:
         correct = task.checkAnswer(List<int>.from(_buildOrder));
       case TaskType.codeEditor:
-        final result = runPython(_editorCtrl.text, stdin: task.stdin);
+        final result = runPython(_editorCtrl.text, stdin: _editorInput.join('\n'));
         _editorRan = true;
         _editorOutput = result.stdout;
         _editorError = result.ok ? null : result.error;
+        _editorNeedsInput = result.ok && result.inputsMissing > 0;
         correct = task.checkEditorCode(_editorCtrl.text);
     }
     widget.progress.recordExercise(widget.lesson.id, _index, correct);
@@ -148,6 +174,7 @@ class _LessonScreenState extends State<LessonScreen> {
         _editorError = null;
         _editorRan = false;
         _editorCtrl.text = _exercise.task?.starter ?? '';
+        _resetEditorInput();
       });
       return;
     }
@@ -273,6 +300,10 @@ class _LessonScreenState extends State<LessonScreen> {
                         editorOutput: _editorOutput,
                         editorError: _editorError,
                         editorRan: _editorRan,
+                        editorNeedsInput: _editorNeedsInput,
+                        inputCtrl: _inputCtrl,
+                        onSubmitInput: _submitEditorInput,
+                        onInputChanged: () => setState(() {}),
                         onRun: _runEditor,
                         onEditorChanged: () => setState(() {}),
                       ),
@@ -342,6 +373,10 @@ class _TaskPanel extends StatelessWidget {
   final String? editorOutput;
   final String? editorError;
   final bool editorRan;
+  final bool editorNeedsInput;
+  final TextEditingController inputCtrl;
+  final VoidCallback onSubmitInput;
+  final VoidCallback onInputChanged;
   final VoidCallback onRun;
   final VoidCallback onEditorChanged;
 
@@ -362,6 +397,10 @@ class _TaskPanel extends StatelessWidget {
     required this.editorOutput,
     required this.editorError,
     required this.editorRan,
+    required this.editorNeedsInput,
+    required this.inputCtrl,
+    required this.onSubmitInput,
+    required this.onInputChanged,
     required this.onRun,
     required this.onEditorChanged,
   });
@@ -442,7 +481,8 @@ class _TaskPanel extends StatelessWidget {
       children: [
         const Text(
           'Напиши программу и нажми «Запустить». Вывод появится ниже — '
-          'даже если в коде ошибка.',
+          'даже если в коде ошибка. Если программа спросит данные, впиши '
+          'ответ и нажми «Отправить».',
           style: TextStyle(fontSize: 14, color: AppColors.textMuted),
         ),
         const SizedBox(height: 10),
@@ -486,6 +526,14 @@ class _TaskPanel extends StatelessWidget {
         if (editorRan) ...[
           const SizedBox(height: 12),
           _OutputPanel(output: editorOutput ?? '', error: editorError),
+        ],
+        if (editorRan && editorNeedsInput && !submitted) ...[
+          const SizedBox(height: 10),
+          PythonInputBar(
+            controller: inputCtrl,
+            onSubmit: onSubmitInput,
+            onChanged: onInputChanged,
+          ),
         ],
       ],
     );

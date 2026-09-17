@@ -113,4 +113,21 @@ void main() {
     final r2 = runPython('import qwerty');
     expect(r2.error, contains('No module named'));
   });
+
+  test('input сообщает, что данных во stdin не хватило', () {
+    final r = runPython('name = input("Как зовут? ")\nprint("Привет,", name)');
+    expect(r.ok, isTrue, reason: r.error);
+    expect(r.inputsMissing, 1);
+    expect(r.stdout, 'Как зовут? Привет, \n');
+
+    final partial = runPython('a = input()\nb = input()', stdin: '1');
+    expect(partial.inputsMissing, 1);
+
+    final enough = runPython('a = input()\nprint(a)', stdin: '1\n');
+    expect(enough.inputsMissing, 0);
+    expect(enough.stdout, '1\n');
+
+    final empty = runPython('a = input()', stdin: '');
+    expect(empty.inputsMissing, 1);
+  });
 }

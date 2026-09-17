@@ -16,7 +16,12 @@ class PyRunResult {
   final bool ok;
   final String stdout;
   final String error;
-  const PyRunResult(this.ok, this.stdout, this.error);
+
+  /// Сколько раз программа вызвала `input()`, не получив готовой строки
+  /// (данные во `stdin` закончились). Больше нуля — программа ждёт ввод.
+  final int inputsMissing;
+
+  const PyRunResult(this.ok, this.stdout, this.error, {this.inputsMissing = 0});
 }
 
 /// Runs a Python-subset program synchronously.
@@ -26,11 +31,14 @@ PyRunResult runPython(String code, {String stdin = ''}) {
     final tokens = _Lexer(code).tokenize();
     final program = _Parser(tokens).parseProgram();
     interp.execProgram(program);
-    return PyRunResult(true, interp.out.toString(), '');
+    return PyRunResult(true, interp.out.toString(), '',
+        inputsMissing: interp.inputsMissing);
   } on PyError catch (e) {
-    return PyRunResult(false, interp.out.toString(), e.message);
+    return PyRunResult(false, interp.out.toString(), e.message,
+        inputsMissing: interp.inputsMissing);
   } catch (e) {
-    return PyRunResult(false, interp.out.toString(), e.toString());
+    return PyRunResult(false, interp.out.toString(), e.toString(),
+        inputsMissing: interp.inputsMissing);
   }
 }
 
@@ -1469,6 +1477,7 @@ class _Interp {
   late _Scope global;
   final List<String> _stdin;
   int _stdinPos = 0;
+  int inputsMissing = 0;
   late final DateTime _start;
   int _ops = 0;
   final Map<String, PyNamespace> _modules = {};
@@ -1476,9 +1485,18 @@ class _Interp {
   _Scope? currentClassScope;
   final List<PyClass> _classStack = [];
 
-  _Interp(String stdin) : _stdin = stdin.split('\n') {
+  _Interp(String stdin) : _stdin = _splitStdin(stdin) {
     _start = DateTime.now();
     global = _Scope(null);
+  }
+
+  static List<String> _splitStdin(String stdin) {
+    if (stdin.isEmpty) return <String>[];
+    final lines = stdin.split('\n');
+    if (stdin.endsWith('\n') && lines.isNotEmpty && lines.last.isEmpty) {
+      lines.removeLast();
+    }
+    return lines;
   }
 
   void _tick() {
@@ -2083,6 +2101,7 @@ class _Interp {
             if (line.endsWith('\r')) line = line.substring(0, line.length - 1);
             return line;
           }
+          inputsMissing++;
           return '';
         });
       case 'len':

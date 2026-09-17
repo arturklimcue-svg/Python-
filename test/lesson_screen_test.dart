@@ -238,6 +238,55 @@ void main() {
     expect(p.xp, 4);
   });
 
+  testWidgets('code_editor: программа ждёт ввод и получает ответ',
+      (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1000, 2400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    const lesson = Lesson(
+      id: 'm1-l1',
+      title: 'Диалог',
+      isPractice: true,
+      xp: 20,
+      exercises: [
+        Exercise(
+          kind: ExerciseKind.theoryTask,
+          text: 'Спроси имя',
+          task: Task(
+            type: TaskType.codeEditor,
+            question: 'Спроси имя и поздоровайся',
+            starter: '# твой код\n',
+            referenceOutput: 'Привет, Аня\n',
+            solution: 'name = input()\nprint("Привет,", name)',
+            explanation: 'input читает строку',
+          ),
+        ),
+      ],
+    );
+    final p = _progress();
+    await p.load();
+
+    await tester.pumpWidget(
+      MaterialApp(home: LessonScreen(lesson: lesson, progress: p)),
+    );
+
+    await tester.enterText(find.byType(TextField).first,
+        'name = input()\nprint("Привет,", name)');
+    await tester.pump();
+    await tester.ensureVisible(find.text('Запустить'));
+    await tester.tap(find.text('Запустить'));
+    await tester.pump();
+
+    expect(find.textContaining('ждёт ввод'), findsOneWidget);
+
+    await tester.ensureVisible(find.text('Отправить'));
+    await tester.enterText(find.byType(TextField).last, 'Аня');
+    await tester.tap(find.text('Отправить'));
+    await tester.pump();
+
+    expect(find.textContaining('Привет, Аня'), findsWidgets);
+    expect(find.text('Отправить'), findsNothing);
+  });
+
   testWidgets('онбординг: ввод имени открывает курс', (tester) async {
     const course = Course(
       title: 'Py',
