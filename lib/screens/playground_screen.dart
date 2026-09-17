@@ -1,0 +1,115 @@
+import 'package:flutter/material.dart';
+
+import '../services/python_interpreter.dart';
+import '../theme.dart';
+import '../widgets/python_output_panel.dart';
+
+class PlaygroundScreen extends StatefulWidget {
+  const PlaygroundScreen({super.key});
+
+  @override
+  State<PlaygroundScreen> createState() => _PlaygroundScreenState();
+}
+
+class _PlaygroundScreenState extends State<PlaygroundScreen> {
+  final _ctrl = TextEditingController(text: 'print("Привет, мир!")\n');
+  String? _output;
+  String? _error;
+  bool _ran = false;
+
+  static const _examples = <String, String>{
+    'Привет': 'print("Привет, мир!")\n',
+    'Цикл': 'for i in range(5):\n    print(i)\n',
+    'Список': 'nums = [3, 1, 2]\nprint(sorted(nums))\nprint(sum(nums))\n',
+    'Функция': 'def greet(name):\n    return f"Привет, {name}!"\n\nprint(greet("Аня"))\n',
+  };
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  void _run() {
+    final result = runPython(_ctrl.text);
+    setState(() {
+      _ran = true;
+      _output = result.stdout;
+      _error = result.ok ? null : result.error;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+      children: [
+        const Text(
+          'Песочница',
+          style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800),
+        ),
+        const SizedBox(height: 6),
+        const Text(
+          'Пиши любой код на Python и запускай прямо здесь — вывод появится '
+          'даже при ошибке.',
+          style: TextStyle(color: AppColors.textMuted, height: 1.4),
+        ),
+        const SizedBox(height: 14),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final entry in _examples.entries)
+              ActionChip(
+                label: Text(entry.key),
+                onPressed: () => setState(() {
+                  _ctrl.text = entry.value;
+                  _output = null;
+                  _error = null;
+                  _ran = false;
+                }),
+              ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.codeBg,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: TextField(
+            controller: _ctrl,
+            maxLines: null,
+            minLines: 8,
+            keyboardType: TextInputType.multiline,
+            textInputAction: TextInputAction.newline,
+            style: const TextStyle(
+              fontFamily: 'monospace',
+              fontSize: 14,
+              height: 1.45,
+              color: AppColors.codeText,
+            ),
+            cursorColor: AppColors.codeText,
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+              hintText: '# напиши код на Python',
+              hintStyle: TextStyle(color: Color(0xFF8887A8)),
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        FilledButton.icon(
+          onPressed: _run,
+          icon: const Icon(Icons.play_arrow_rounded),
+          label: const Text('Запустить'),
+          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+        ),
+        if (_ran) ...[
+          const SizedBox(height: 12),
+          PythonOutputPanel(output: _output ?? '', error: _error),
+        ],
+      ],
+    );
+  }
+}

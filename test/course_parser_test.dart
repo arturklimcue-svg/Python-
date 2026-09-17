@@ -57,6 +57,10 @@ void main() {
                 }
                 expect(t.correct.toSet().length, t.correct.length,
                     reason: 'code_build должен быть перестановкой');
+              case TaskType.codeEditor:
+                expect(t.starter, isNotEmpty);
+                expect(t.referenceOutput, isNotEmpty);
+                expect(t.solution, isNotEmpty);
             }
           }
         }

@@ -1,6 +1,6 @@
 enum ExerciseKind { theory, theoryTask }
 
-enum TaskType { single, multi, trueFalse, fill, codeOutput, codeBuild }
+enum TaskType { single, multi, trueFalse, fill, codeOutput, codeBuild, codeEditor }
 
 enum TaskStatus { unattempted, correct, wrong }
 
@@ -15,6 +15,10 @@ class Task {
   final List<String> answers;
   final bool caseInsensitive;
   final String explanation;
+  final String starter;
+  final String stdin;
+  final String referenceOutput;
+  final String solution;
 
   const Task({
     required this.type,
@@ -27,6 +31,10 @@ class Task {
     this.answers = const [],
     this.caseInsensitive = true,
     this.explanation = '',
+    this.starter = '',
+    this.stdin = '',
+    this.referenceOutput = '',
+    this.solution = '',
   });
 
   factory Task.fromJson(Map<String, dynamic> j) {
@@ -47,6 +55,10 @@ class Task {
           .toList(),
       caseInsensitive: (j['case_insensitive'] as bool?) ?? true,
       explanation: (j['explanation'] as String?) ?? '',
+      starter: (j['starter'] as String?) ?? '',
+      stdin: (j['stdin'] as String?) ?? '',
+      referenceOutput: (j['reference_output'] as String?) ?? '',
+      solution: (j['solution'] as String?) ?? '',
     );
   }
 
@@ -64,6 +76,8 @@ class Task {
         return TaskType.codeOutput;
       case 'code_build':
         return TaskType.codeBuild;
+      case 'code_editor':
+        return TaskType.codeEditor;
       default:
         throw ArgumentError('Unknown task type: $s');
     }
@@ -88,7 +102,31 @@ class Task {
         return _checkFill(answer);
       case TaskType.codeBuild:
         return _checkBuild(answer);
+      case TaskType.codeEditor:
+        return answer is String && checkEditorOutput(answer);
     }
+  }
+
+  /// Сравнивает вывод программы ученика с эталонным, игнорируя
+  /// висячие пробелы и пустые строки в конце.
+  bool checkEditorOutput(String actual) {
+    if (referenceOutput.isEmpty) return false;
+    return _normOutput(actual) == _normOutput(referenceOutput);
+  }
+
+  static String _normOutput(String s) {
+    final lines = s
+        .replaceAll('\r\n', '\n')
+        .split('\n')
+        .map((l) => l.replaceAll(RegExp(r'[ \t]+$'), ''))
+        .toList();
+    while (lines.isNotEmpty && lines.last.isEmpty) {
+      lines.removeLast();
+    }
+    while (lines.isNotEmpty && lines.first.isEmpty) {
+      lines.removeAt(0);
+    }
+    return lines.join('\n');
   }
 
   bool _checkBuild(dynamic answer) {

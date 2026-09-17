@@ -1,0 +1,1444 @@
+[
+ {
+  "key": "m1:m1-l1:12",
+  "m": 1,
+  "l": "Введение",
+  "code": "print(\"Hello world\")",
+  "out": "Hello world\n"
+ },
+ {
+  "key": "m1:m1-l2:7",
+  "m": 1,
+  "l": "Переменные",
+  "code": "x = 10\nx = 20\nprint(x)",
+  "out": "20\n"
+ },
+ {
+  "key": "m1:m1-l2:10",
+  "m": 1,
+  "l": "Переменные",
+  "code": "a = 1\nb = a\nprint(b)",
+  "out": "1\n"
+ },
+ {
+  "key": "m1:m1-l3:1",
+  "m": 1,
+  "l": "Использование переменных",
+  "code": "name = \"Аня\"\nage = 25\nprint(name, age)",
+  "out": "Аня 25\n"
+ },
+ {
+  "key": "m1:m1-l3:3",
+  "m": 1,
+  "l": "Использование переменных",
+  "code": "price = 100\ncount = 3\ntotal = price * count\nprint(total)",
+  "out": "300\n"
+ },
+ {
+  "key": "m1:m1-l3:5",
+  "m": 1,
+  "l": "Использование переменных",
+  "code": "first = \"Ко\"\nsecond = \"дик\"\nprint(first + second)",
+  "out": "Кодик\n"
+ },
+ {
+  "key": "m1:m1-l3:10",
+  "m": 1,
+  "l": "Использование переменных",
+  "code": "x = 8\ny = 2\nprint(x - y)",
+  "out": "6\n"
+ },
+ {
+  "key": "m1:m1-l4:1",
+  "m": 1,
+  "l": "Булевый тип данных",
+  "code": "print(True)",
+  "out": "True\n"
+ },
+ {
+  "key": "m1:m1-l4:3",
+  "m": 1,
+  "l": "Булевый тип данных",
+  "code": "print(5 > 3)",
+  "out": "True\n"
+ },
+ {
+  "key": "m1:m1-l4:5",
+  "m": 1,
+  "l": "Булевый тип данных",
+  "code": "print(5 == 5)",
+  "out": "True\n"
+ },
+ {
+  "key": "m1:m1-l4:7",
+  "m": 1,
+  "l": "Булевый тип данных",
+  "code": "print(10 != 10)",
+  "out": "False\n"
+ },
+ {
+  "key": "m1:m1-l4:9",
+  "m": 1,
+  "l": "Булевый тип данных",
+  "code": "print(7 <= 7)",
+  "out": "True\n"
+ },
+ {
+  "key": "m1:m1-l4:11",
+  "m": 1,
+  "l": "Булевый тип данных",
+  "code": "print(2 > 10)",
+  "out": "False\n"
+ },
+ {
+  "key": "m1:m1-l5:1",
+  "m": 1,
+  "l": "Проверка равенства чисел",
+  "code": "print(100 == 100)",
+  "out": "True\n"
+ },
+ {
+  "key": "m1:m1-l5:6",
+  "m": 1,
+  "l": "Проверка равенства чисел",
+  "code": "x = 10\ny = 10\nprint(x == y)",
+  "out": "True\n"
+ },
+ {
+  "key": "m1:m1-l5:8",
+  "m": 1,
+  "l": "Проверка равенства чисел",
+  "code": "print(5 != 5)",
+  "out": "False\n"
+ },
+ {
+  "key": "m1:m1-l5:10",
+  "m": 1,
+  "l": "Проверка равенства чисел",
+  "code": "print(1 == 1.0)",
+  "out": "True\n"
+ },
+ {
+  "key": "m1:m1-l5:11",
+  "m": 1,
+  "l": "Проверка равенства чисел",
+  "code": "print(7 == 7 == 7)",
+  "out": "True\n"
+ },
+ {
+  "key": "m1:m1-l6:1",
+  "m": 1,
+  "l": "Форматирование строк",
+  "code": "name = \"Даня\"\nprint(f\"Привет, {name}!\")",
+  "out": "Привет, Даня!\n"
+ },
+ {
+  "key": "m1:m1-l6:5",
+  "m": 1,
+  "l": "Форматирование строк",
+  "code": "age = 20\nprint(f\"Мне {age + 5} лет\")",
+  "out": "Мне 25 лет\n"
+ },
+ {
+  "key": "m1:m1-l6:6",
+  "m": 1,
+  "l": "Форматирование строк",
+  "code": "print(f\"{3 + 4}\")",
+  "out": "7\n"
+ },
+ {
+  "key": "m1:m1-l7:1",
+  "m": 1,
+  "l": "Сравнение чисел",
+  "code": "print(10 < 2)",
+  "out": "False\n"
+ },
+ {
+  "key": "m1:m1-l7:3",
+  "m": 1,
+  "l": "Сравнение чисел",
+  "code": "print(5 >= 5)",
+  "out": "True\n"
+ },
+ {
+  "key": "m1:m1-l7:6",
+  "m": 1,
+  "l": "Сравнение чисел",
+  "code": "print(-5 < 0)",
+  "out": "True\n"
+ },
+ {
+  "key": "m1:m1-l7:8",
+  "m": 1,
+  "l": "Сравнение чисел",
+  "code": "print(2 * 3 == 6)",
+  "out": "True\n"
+ },
+ {
+  "key": "m1:m1-l7:9",
+  "m": 1,
+  "l": "Сравнение чисел",
+  "code": "print(10 / 2 == 5)",
+  "out": "True\n"
+ },
+ {
+  "key": "m1:m1-l7:11",
+  "m": 1,
+  "l": "Сравнение чисел",
+  "code": "score = 100\nprint(score > 90)",
+  "out": "True\n"
+ },
+ {
+  "key": "m1:m1-l8:1",
+  "m": 1,
+  "l": "Сравнение строк",
+  "code": "print(\"apple\" == \"apple\")",
+  "out": "True\n"
+ },
+ {
+  "key": "m1:m1-l8:5",
+  "m": 1,
+  "l": "Сравнение строк",
+  "code": "print(\"b\" > \"a\")",
+  "out": "True\n"
+ },
+ {
+  "key": "m1:m1-l8:7",
+  "m": 1,
+  "l": "Сравнение строк",
+  "code": "print(\"5\" == 5)",
+  "out": "False\n"
+ },
+ {
+  "key": "m1:m1-l8:8",
+  "m": 1,
+  "l": "Сравнение строк",
+  "code": "print(\"Ко\" + \"дик\" == \"Кодик\")",
+  "out": "True\n"
+ },
+ {
+  "key": "m1:m1-l8:10",
+  "m": 1,
+  "l": "Сравнение строк",
+  "code": "print(\"10\" + \"20\")",
+  "out": "1020\n"
+ },
+ {
+  "key": "m1:m1-l9:2",
+  "m": 1,
+  "l": "Типы данных",
+  "code": "x = 5\nprint(type(x))",
+  "out": "<class 'int'>\n"
+ },
+ {
+  "key": "m1:m1-l9:3",
+  "m": 1,
+  "l": "Типы данных",
+  "code": "x = 2.5\nprint(type(x))",
+  "out": "<class 'float'>\n"
+ },
+ {
+  "key": "m1:m1-l9:4",
+  "m": 1,
+  "l": "Типы данных",
+  "code": "x = \"Привет\"\nprint(type(x))",
+  "out": "<class 'str'>\n"
+ },
+ {
+  "key": "m1:m1-l9:5",
+  "m": 1,
+  "l": "Типы данных",
+  "code": "x = True\nprint(type(x))",
+  "out": "<class 'bool'>\n"
+ },
+ {
+  "key": "m1:m1-l9:7",
+  "m": 1,
+  "l": "Типы данных",
+  "code": "print(int(\"10\") + 5)",
+  "out": "15\n"
+ },
+ {
+  "key": "m1:m1-l9:9",
+  "m": 1,
+  "l": "Типы данных",
+  "code": "print(str(100) + \"!\")",
+  "out": "100!\n"
+ },
+ {
+  "key": "m1:m1-l9:11",
+  "m": 1,
+  "l": "Типы данных",
+  "code": "total = \"12\"\nprint(int(total) + 8)",
+  "out": "20\n"
+ },
+ {
+  "key": "m1:m1-l10:4",
+  "m": 1,
+  "l": "Input",
+  "code": "name = input()\nprint(f\"Привет, {name}!\")",
+  "skip": "input()"
+ },
+ {
+  "key": "m1:m1-l11:6",
+  "m": 1,
+  "l": "Практика: Простой бот",
+  "code": "name = \"Макс\"\nprint(f\"Привет, {name}!\")",
+  "out": "Привет, Макс!\n"
+ },
+ {
+  "key": "m1:m1-l11:8",
+  "m": 1,
+  "l": "Практика: Простой бот",
+  "code": "age = input(\"Сколько тебе лет? \")\nprint(\"Тебе\", age, \"лет\")",
+  "skip": "input()"
+ },
+ {
+  "key": "m1:m1-l11:12",
+  "m": 1,
+  "l": "Практика: Простой бот",
+  "code": "print(\"Бот завершил работу. Пока!\")",
+  "out": "Бот завершил работу. Пока!\n"
+ },
+ {
+  "key": "m2:?:3",
+  "m": 2,
+  "l": "Оператор if",
+  "code": "age = 20\nif age >= 18:\n    print(\"Доступ открыт\")",
+  "out": "Доступ открыт\n"
+ },
+ {
+  "key": "m2:?:6",
+  "m": 2,
+  "l": "Оператор if",
+  "code": "number = 7\nif number % 2 == 0:\n    print(\"Чётное\")",
+  "out": ""
+ },
+ {
+  "key": "m2:?:11",
+  "m": 2,
+  "l": "Оператор if",
+  "code": "score = 75\nif score > 50:\n    print(\"Уровень пройден\")",
+  "out": "Уровень пройден\n"
+ },
+ {
+  "key": "m2:?:1",
+  "m": 2,
+  "l": "Операторы elif и else",
+  "code": "grade = 3\nif grade >= 4:\n    print(\"Отлично\")\nelse:\n    print(\"Надо подтянуться\")",
+  "out": "Надо подтянуться\n"
+ },
+ {
+  "key": "m2:?:3",
+  "m": 2,
+  "l": "Операторы elif и else",
+  "code": "time = 20\nif time < 12:\n    print(\"Утро\")\nelif time < 18:\n    print(\"День\")\nelse:\n    print(\"Вечер\")",
+  "out": "Вечер\n"
+ },
+ {
+  "key": "m2:?:7",
+  "m": 2,
+  "l": "Операторы elif и else",
+  "code": "x = 5\nif x == 3:\n    print(\"три\")\nelif x == 5:\n    print(\"пять\")\nelif x == 7:\n    print(\"семь\")\nelse:\n    print(\"другое\")",
+  "out": "пять\n"
+ },
+ {
+  "key": "m2:?:10",
+  "m": 2,
+  "l": "Операторы elif и else",
+  "code": "age = 14\nif age >= 18:\n    print(\"Взрослый\")\nelif age >= 12:\n    print(\"Подросток\")\nelse:\n    print(\"Ребёнок\")",
+  "out": "Подросток\n"
+ },
+ {
+  "key": "m2:?:1",
+  "m": 2,
+  "l": "Тернарный оператор",
+  "code": "age = 15\nprint(\"взрослый\" if age >= 18 else \"ребёнок\")",
+  "out": "ребёнок\n"
+ },
+ {
+  "key": "m2:?:4",
+  "m": 2,
+  "l": "Тернарный оператор",
+  "code": "x = 5\ny = 10\nbig = x if x > y else y\nprint(big)",
+  "out": "10\n"
+ },
+ {
+  "key": "m2:?:7",
+  "m": 2,
+  "l": "Тернарный оператор",
+  "code": "price = 100\nfinal = price * 0.8 if price > 90 else price\nprint(final)",
+  "out": "80.0\n"
+ },
+ {
+  "key": "m2:?:1",
+  "m": 2,
+  "l": "Вложенные условия",
+  "code": "user_approved = True\npassword = \"0000\"\nif user_approved:\n    if password == \"1234\":\n        print(\"Добро пожаловать\")",
+  "out": ""
+ },
+ {
+  "key": "m2:?:6",
+  "m": 2,
+  "l": "Вложенные условия",
+  "code": "x = 10\nif x > 5:\n    if x > 15:\n        print(\"А\")\n    else:\n        print(\"Б\")",
+  "out": "Б\n"
+ },
+ {
+  "key": "m2:?:10",
+  "m": 2,
+  "l": "Вложенные условия",
+  "code": "score = 90\ngold_enough = True\nif score > 80:\n    if gold_enough:\n        print(\"Награда: золото\")\n    else:\n        print(\"Награда: серебро\")",
+  "out": "Награда: золото\n"
+ },
+ {
+  "key": "m2:?:1",
+  "m": 2,
+  "l": "Цикл while",
+  "code": "n = 0\nwhile n < 3:\n    print(\"Раз\")\n    n += 1",
+  "out": "Раз\nРаз\nРаз\n"
+ },
+ {
+  "key": "m2:?:4",
+  "m": 2,
+  "l": "Цикл while",
+  "code": "n = 5\nwhile n > 0:\n    print(n)\n    n -= 1",
+  "out": "5\n4\n3\n2\n1\n"
+ },
+ {
+  "key": "m2:?:7",
+  "m": 2,
+  "l": "Цикл while",
+  "code": "total = 0\ni = 1\nwhile i <= 4:\n    total += i\n    i += 1\nprint(total)",
+  "out": "10\n"
+ },
+ {
+  "key": "m2:?:1",
+  "m": 2,
+  "l": "Цикл for",
+  "code": "for fruit in [\"яблоко\", \"груша\", \"слива\"]:\n    print(fruit)",
+  "out": "яблоко\nгруша\nслива\n"
+ },
+ {
+  "key": "m2:?:3",
+  "m": 2,
+  "l": "Цикл for",
+  "code": "for i in range(3):\n    print(i)",
+  "out": "0\n1\n2\n"
+ },
+ {
+  "key": "m2:?:6",
+  "m": 2,
+  "l": "Цикл for",
+  "code": "for i in range(1, 10, 2):\n    print(i)",
+  "out": "1\n3\n5\n7\n9\n"
+ },
+ {
+  "key": "m2:?:1",
+  "m": 2,
+  "l": "break, continue и pass",
+  "code": "for i in range(10):\n    if i == 3:\n        break\n    print(i)",
+  "out": "0\n1\n2\n"
+ },
+ {
+  "key": "m2:?:3",
+  "m": 2,
+  "l": "break, continue и pass",
+  "code": "for i in range(5):\n    if i == 2:\n        continue\n    print(i)",
+  "out": "0\n1\n3\n4\n"
+ },
+ {
+  "key": "m2:?:7",
+  "m": 2,
+  "l": "break, continue и pass",
+  "code": "s = 0\nn = 1\nwhile True:\n    s += n\n    n += 1\n    if s > 10:\n        break\nprint(s)",
+  "out": "15\n"
+ },
+ {
+  "key": "m2:?:1",
+  "m": 2,
+  "l": "Комбинирование условий и циклов",
+  "code": "age = 17\nallow = True\nif age >= 18 and allow:\n    print(\"Доступ разрешён\")",
+  "out": ""
+ },
+ {
+  "key": "m2:?:3",
+  "m": 2,
+  "l": "Комбинирование условий и циклов",
+  "code": "score = 40\nif score > 60 or score == 40:\n    print(\"Попал\")\nelse:\n    print(\"Мимо\")",
+  "out": "Попал\n"
+ },
+ {
+  "key": "m2:?:7",
+  "m": 2,
+  "l": "Комбинирование условий и циклов",
+  "code": "for i in range(6):\n    if i % 2 != 0:\n        continue\n    print(i)",
+  "out": "0\n2\n4\n"
+ },
+ {
+  "key": "m2:?:2",
+  "m": 2,
+  "l": "Практика: Проверка пользователя",
+  "code": "age = 16\nif age >= 18:\n    print(\"Добро пожаловать\")\nelse:\n    print(\"Доступ закрыт\")",
+  "out": "Доступ закрыт\n"
+ },
+ {
+  "key": "m2:?:5",
+  "m": 2,
+  "l": "Практика: Проверка пользователя",
+  "code": "role = \"admin\"\nif role == \"admin\":\n    print(\"Панель\")\nelif role == \"user\":\n    print(\"Профиль\")\nelse:\n    print(\"Гость\")",
+  "out": "Панель\n"
+ },
+ {
+  "key": "m2:?:9",
+  "m": 2,
+  "l": "Практика: Проверка пользователя",
+  "code": "login = \"alice\"\nif login == \"bob\" or login == \"alice\":\n    print(\"Вход выполнен\")",
+  "out": "Вход выполнен\n"
+ },
+ {
+  "key": "m2:?:14",
+  "m": 2,
+  "l": "Практика: Проверка пользователя",
+  "code": "age = 20\nif age < 7:\n    print(\"Ребёнок\")\nelif age < 18:\n    print(\"Подросток\")\nelif age < 60:\n    print(\"Взрослый\")\nelse:\n    print(\"Сеньор\")",
+  "out": "Взрослый\n"
+ },
+ {
+  "key": "m3:?:3",
+  "m": 3,
+  "l": "Создание списков",
+  "code": "numbers = [10, 20, 30]\nprint(numbers)",
+  "out": "[10, 20, 30]\n"
+ },
+ {
+  "key": "m3:?:9",
+  "m": 3,
+  "l": "Создание списков",
+  "code": "scores = [90, 75, 80]\nprint(len(scores))",
+  "out": "3\n"
+ },
+ {
+  "key": "m3:?:1",
+  "m": 3,
+  "l": "Индексы и обращение к элементам",
+  "code": "nums = [10, 20, 30]\nprint(nums[1])",
+  "out": "20\n"
+ },
+ {
+  "key": "m3:?:3",
+  "m": 3,
+  "l": "Индексы и обращение к элементам",
+  "code": "fruits = [\"яблоко\", \"груша\", \"слива\"]\nprint(fruits[-1])",
+  "out": "слива\n"
+ },
+ {
+  "key": "m3:?:7",
+  "m": 3,
+  "l": "Индексы и обращение к элементам",
+  "code": "nums = [10, 20, 30]\nnums[0] = 100\nprint(nums)",
+  "out": "[100, 20, 30]\n"
+ },
+ {
+  "key": "m3:?:1",
+  "m": 3,
+  "l": "Методы списков: append, insert, remove",
+  "code": "names = [\"Аня\"]\nnames.append(\"Боря\")\nprint(names)",
+  "out": "['Аня', 'Боря']\n"
+ },
+ {
+  "key": "m3:?:3",
+  "m": 3,
+  "l": "Методы списков: append, insert, remove",
+  "code": "names = [\"Аня\", \"Боря\"]\nnames.insert(0, \"Вася\")\nprint(names)",
+  "out": "['Вася', 'Аня', 'Боря']\n"
+ },
+ {
+  "key": "m3:?:5",
+  "m": 3,
+  "l": "Методы списков: append, insert, remove",
+  "code": "cart = [\"хлеб\", \"молоко\", \"хлеб\"]\ncart.remove(\"хлеб\")\nprint(cart)",
+  "out": "['молоко', 'хлеб']\n"
+ },
+ {
+  "key": "m3:?:1",
+  "m": 3,
+  "l": "Срезы списков",
+  "code": "nums = [0, 1, 2, 3, 4]\nprint(nums[1:3])",
+  "out": "[1, 2]\n"
+ },
+ {
+  "key": "m3:?:3",
+  "m": 3,
+  "l": "Срезы списков",
+  "code": "nums = [0, 1, 2, 3, 4]\nprint(nums[:3])",
+  "out": "[0, 1, 2]\n"
+ },
+ {
+  "key": "m3:?:6",
+  "m": 3,
+  "l": "Срезы списков",
+  "code": "nums = [0, 1, 2, 3, 4]\nprint(nums[::2])",
+  "out": "[0, 2, 4]\n"
+ },
+ {
+  "key": "m3:?:9",
+  "m": 3,
+  "l": "Срезы списков",
+  "code": "nums = [1, 2, 3, 4, 5]\nprint(nums[::-1])",
+  "out": "[5, 4, 3, 2, 1]\n"
+ },
+ {
+  "key": "m3:?:2",
+  "m": 3,
+  "l": "Перебор списков с помощью циклов",
+  "code": "names = [\"Аня\", \"Боря\"]\nfor i, name in enumerate(names):\n    print(i, name)",
+  "out": "0 Аня\n1 Боря\n"
+ },
+ {
+  "key": "m3:?:4",
+  "m": 3,
+  "l": "Перебор списков с помощью циклов",
+  "code": "scores = [90, 75, 80]\ntotal = 0\nfor s in scores:\n    total += s\nprint(total)",
+  "out": "245\n"
+ },
+ {
+  "key": "m3:?:8",
+  "m": 3,
+  "l": "Перебор списков с помощью циклов",
+  "code": "words = [\"котик\", \"пес\", \"мышка\"]\nlong = []\nfor w in words:\n    if len(w) > 3:\n        long.append(w)\nprint(long)",
+  "out": "['котик', 'мышка']\n"
+ },
+ {
+  "key": "m3:?:1",
+  "m": 3,
+  "l": "Списковые включения (list comprehension)",
+  "code": "squares = [x * x for x in range(5)]\nprint(squares)",
+  "out": "[0, 1, 4, 9, 16]\n"
+ },
+ {
+  "key": "m3:?:3",
+  "m": 3,
+  "l": "Списковые включения (list comprehension)",
+  "code": "evens = [x for x in range(10) if x % 2 == 0]\nprint(evens)",
+  "out": "[0, 2, 4, 6, 8]\n"
+ },
+ {
+  "key": "m3:?:7",
+  "m": 3,
+  "l": "Списковые включения (list comprehension)",
+  "code": "chars = [x for x in \"python\"]\nprint(chars)",
+  "out": "['p', 'y', 't', 'h', 'o', 'n']\n"
+ },
+ {
+  "key": "m3:?:1",
+  "m": 3,
+  "l": "Копирование и вложенные списки",
+  "code": "a = [1, 2, 3]\nb = a\na.append(4)\nprint(b)",
+  "out": "[1, 2, 3, 4]\n"
+ },
+ {
+  "key": "m3:?:3",
+  "m": 3,
+  "l": "Копирование и вложенные списки",
+  "code": "a = [1, 2, 3]\nb = a[:]\na.append(4)\nprint(b)",
+  "out": "[1, 2, 3]\n"
+ },
+ {
+  "key": "m3:?:5",
+  "m": 3,
+  "l": "Копирование и вложенные списки",
+  "code": "matrix = [[1, 2], [3, 4]]\nprint(matrix[0][1])",
+  "out": "2\n"
+ },
+ {
+  "key": "m3:?:10",
+  "m": 3,
+  "l": "Копирование и вложенные списки",
+  "code": "grid = [[1, 2, 3], [4, 5, 6]]\nprint(grid[1][2])",
+  "out": "6\n"
+ },
+ {
+  "key": "m3:?:2",
+  "m": 3,
+  "l": "Практика: Анализ заказов в интернет-магазине",
+  "code": "orders = [100, 200, 50]\nprint(sum(orders))",
+  "out": "350\n"
+ },
+ {
+  "key": "m3:?:5",
+  "m": 3,
+  "l": "Практика: Анализ заказов в интернет-магазине",
+  "code": "prices = [99, 149, 299]\nprint(prices[1])",
+  "out": "149\n"
+ },
+ {
+  "key": "m3:?:8",
+  "m": 3,
+  "l": "Практика: Анализ заказов в интернет-магазине",
+  "code": "nums = [1, 2, 3, 2]\nprint(nums.count(2))",
+  "out": "2\n"
+ },
+ {
+  "key": "m3:?:10",
+  "m": 3,
+  "l": "Практика: Анализ заказов в интернет-магазине",
+  "code": "nums = [5, 3, 1]\nnums.sort()\nprint(nums[0])",
+  "out": "1\n"
+ },
+ {
+  "key": "m3:?:14",
+  "m": 3,
+  "l": "Практика: Анализ заказов в интернет-магазине",
+  "code": "orders = [10, 20, 30]\nbig = [o for o in orders if o > 15]\nprint(big)",
+  "out": "[20, 30]\n"
+ },
+ {
+  "key": "m4:?:3",
+  "m": 4,
+  "l": "Определение функции",
+  "code": "def greet():\n    print(\"Привет!\")\ngreet()",
+  "out": "Привет!\n"
+ },
+ {
+  "key": "m4:?:1",
+  "m": 4,
+  "l": "Параметры и аргументы",
+  "code": "def greet(name):\n    print(f\"Привет, {name}!\")\ngreet(\"Аня\")",
+  "out": "Привет, Аня!\n"
+ },
+ {
+  "key": "m4:?:4",
+  "m": 4,
+  "l": "Параметры и аргументы",
+  "code": "def add(a, b):\n    print(a + b)\nadd(2, 3)",
+  "out": "5\n"
+ },
+ {
+  "key": "m4:?:8",
+  "m": 4,
+  "l": "Параметры и аргументы",
+  "code": "def show(city, country):\n    print(f\"{city} — в стране {country}\")\nshow(country=\"Россия\", city=\"Москва\")",
+  "out": "Москва — в стране Россия\n"
+ },
+ {
+  "key": "m4:?:1",
+  "m": 4,
+  "l": "Возвращаемое значение (return)",
+  "code": "def add(a, b):\n    return a + b\nprint(add(3, 4))",
+  "out": "7\n"
+ },
+ {
+  "key": "m4:?:5",
+  "m": 4,
+  "l": "Возвращаемое значение (return)",
+  "code": "def check(n):\n    if n > 0:\n        return \"положительное\"\n    return \"не положительное\"\nprint(check(-3))",
+  "out": "не положительное\n"
+ },
+ {
+  "key": "m4:?:8",
+  "m": 4,
+  "l": "Возвращаемое значение (return)",
+  "code": "def total(price, count):\n    return price * count\nprint(total(10, 3))",
+  "out": "30\n"
+ },
+ {
+  "key": "m4:?:1",
+  "m": 4,
+  "l": "Аргументы по умолчанию",
+  "code": "def greet(name, greeting=\"Привет\"):\n    print(f\"{greeting}, {name}!\")\ngreet(\"Макс\")",
+  "out": "Привет, Макс!\n"
+ },
+ {
+  "key": "m4:?:5",
+  "m": 4,
+  "l": "Аргументы по умолчанию",
+  "code": "def power(x, n=2):\n    return x ** n\nprint(power(3))",
+  "out": "9\n"
+ },
+ {
+  "key": "m4:?:1",
+  "m": 4,
+  "l": "*args и **kwargs",
+  "code": "def summ(*args):\n    return sum(args)\nprint(summ(1, 2, 3))",
+  "out": "6\n"
+ },
+ {
+  "key": "m4:?:3",
+  "m": 4,
+  "l": "*args и **kwargs",
+  "code": "def info(**kwargs):\n    for k, v in kwargs.items():\n        print(k, v)\ninfo(name=\"Анна\", age=25)",
+  "out": "name Анна\nage 25\n"
+ },
+ {
+  "key": "m4:?:7",
+  "m": 4,
+  "l": "*args и **kwargs",
+  "code": "def make_link(host, **kwargs):\n    print(host, kwargs)\nmake_link(\"site.ru\", lang=\"ru\")",
+  "out": "site.ru {'lang': 'ru'}\n"
+ },
+ {
+  "key": "m4:?:1",
+  "m": 4,
+  "l": "Lambda-функции",
+  "code": "double = lambda x: x * 2\nprint(double(4))",
+  "out": "8\n"
+ },
+ {
+  "key": "m4:?:3",
+  "m": 4,
+  "l": "Lambda-функции",
+  "code": "add = lambda a, b: a + b\nprint(add(2, 5))",
+  "out": "7\n"
+ },
+ {
+  "key": "m4:?:1",
+  "m": 4,
+  "l": "Область видимости переменных",
+  "code": "def make():\n    x = 10\nmake()\nprint(x)",
+  "skip": "runtime error"
+ },
+ {
+  "key": "m4:?:4",
+  "m": 4,
+  "l": "Область видимости переменных",
+  "code": "x = 10\ndef show():\n    print(x)\nshow()",
+  "out": "10\n"
+ },
+ {
+  "key": "m4:?:4",
+  "m": 4,
+  "l": "Практика: Доставка еды",
+  "code": "def double(x):\n    return x * 2\n\nprint(double(4))",
+  "out": "8\n"
+ },
+ {
+  "key": "m4:?:8",
+  "m": 4,
+  "l": "Практика: Доставка еды",
+  "code": "def tip(bill, percent=10):\n    return bill * percent / 100\n\nprint(tip(1000))",
+  "out": "100.0\n"
+ },
+ {
+  "key": "m4:?:11",
+  "m": 4,
+  "l": "Практика: Доставка еды",
+  "code": "def f(a=1, b=2):\n    return a + b\n\nprint(f(10))",
+  "out": "12\n"
+ },
+ {
+  "key": "m4:?:13",
+  "m": 4,
+  "l": "Практика: Доставка еды",
+  "code": "discount = lambda price: price * 0.9\nprint(discount(100))",
+  "out": "90.0\n"
+ },
+ {
+  "key": "m5:?:3",
+  "m": 5,
+  "l": "Кортежи (tuple)",
+  "code": "color = (255, 0, 0)\nprint(color[0])",
+  "out": "255\n"
+ },
+ {
+  "key": "m5:?:6",
+  "m": 5,
+  "l": "Кортежи (tuple)",
+  "code": "point = (3, 4)\nx, y = point\nprint(x, y)",
+  "out": "3 4\n"
+ },
+ {
+  "key": "m5:?:4",
+  "m": 5,
+  "l": "Неизменяемость кортежей и когда их использовать",
+  "code": "t = (5,)\nprint(len(t))",
+  "out": "1\n"
+ },
+ {
+  "key": "m5:?:6",
+  "m": 5,
+  "l": "Неизменяемость кортежей и когда их использовать",
+  "code": "point = (3, 4)\nfor x in point:\n    print(x)",
+  "out": "3\n4\n"
+ },
+ {
+  "key": "m5:?:1",
+  "m": 5,
+  "l": "Создание и обращение к словарям",
+  "code": "user = {\"name\": \"Анна\", \"age\": 25}\nprint(user[\"name\"])",
+  "out": "Анна\n"
+ },
+ {
+  "key": "m5:?:4",
+  "m": 5,
+  "l": "Создание и обращение к словарям",
+  "code": "user = {\"name\": \"Анна\"}\nuser[\"city\"] = \"Москва\"\nprint(user)",
+  "out": "{'name': 'Анна', 'city': 'Москва'}\n"
+ },
+ {
+  "key": "m5:?:1",
+  "m": 5,
+  "l": "Методы словарей: get, keys, values, items",
+  "code": "user = {\"name\": \"Анна\"}\nprint(user.get(\"age\", 0))",
+  "out": "0\n"
+ },
+ {
+  "key": "m5:?:3",
+  "m": 5,
+  "l": "Методы словарей: get, keys, values, items",
+  "code": "user = {\"name\": \"Анна\", \"age\": 25}\nprint(list(user.keys()))",
+  "out": "['name', 'age']\n"
+ },
+ {
+  "key": "m5:?:2",
+  "m": 5,
+  "l": "Перебор словарей и вложенные структуры",
+  "code": "scores = {\"Аня\": 90, \"Боря\": 75}\nfor name, s in scores.items():\n    print(name, s)",
+  "out": "Аня 90\nБоря 75\n"
+ },
+ {
+  "key": "m5:?:4",
+  "m": 5,
+  "l": "Перебор словарей и вложенные структуры",
+  "code": "order = {\"items\": [\"хлеб\", \"молоко\"], \"sum\": 350}\nprint(order[\"items\"][0])",
+  "out": "хлеб\n"
+ },
+ {
+  "key": "m5:?:7",
+  "m": 5,
+  "l": "Перебор словарей и вложенные структуры",
+  "code": "prices = {\"хлеб\": 50, \"молоко\": 80, \"сыр\": 120}\ntotal = 0\nfor p in prices.values():\n    total += p\nprint(total)",
+  "out": "250\n"
+ },
+ {
+  "key": "m5:?:1",
+  "m": 5,
+  "l": "Множества (set) и операции над ними",
+  "code": "tags = {\"python\", \"python\", \"код\"}\nprint(tags)",
+  "skip": "set order"
+ },
+ {
+  "key": "m5:?:3",
+  "m": 5,
+  "l": "Множества (set) и операции над ними",
+  "code": "a = {\"a\", \"b\"}\nb = {\"b\", \"c\"}\nprint(a | b)",
+  "skip": "set order"
+ },
+ {
+  "key": "m5:?:6",
+  "m": 5,
+  "l": "Множества (set) и операции над ними",
+  "code": "nums = set([1, 1, 2, 3, 3])\nprint(nums)",
+  "skip": "set order"
+ },
+ {
+  "key": "m5:?:2",
+  "m": 5,
+  "l": "Практика: Вытяни карту",
+  "code": "ranks = (\"6\", \"7\")\nprint(ranks[1])",
+  "out": "7\n"
+ },
+ {
+  "key": "m5:?:5",
+  "m": 5,
+  "l": "Практика: Вытяни карту",
+  "code": "values = {\"J\": 2, \"Q\": 3}\nprint(values[\"Q\"])",
+  "out": "3\n"
+ },
+ {
+  "key": "m5:?:9",
+  "m": 5,
+  "l": "Практика: Вытяни карту",
+  "code": "d = {\"J\": 2, \"Q\": 3}\nfor k, v in d.items():\n    print(k, v)",
+  "out": "J 2\nQ 3\n"
+ },
+ {
+  "key": "m5:?:12",
+  "m": 5,
+  "l": "Практика: Вытяни карту",
+  "code": "hand = {\"пики\", \"черви\", \"пики\"}\nprint(len(hand))",
+  "out": "2\n"
+ },
+ {
+  "key": "m6:?:1",
+  "m": 6,
+  "l": "Импорт модулей и пакетов",
+  "code": "import math\nprint(math.sqrt(16))",
+  "out": "4.0\n"
+ },
+ {
+  "key": "m6:?:4",
+  "m": 6,
+  "l": "Импорт модулей и пакетов",
+  "code": "from math import floor\nprint(floor(2.9))",
+  "out": "2\n"
+ },
+ {
+  "key": "m6:?:4",
+  "m": 6,
+  "l": "Стандартная библиотека Python",
+  "code": "import math\nprint(math.ceil(4.2))",
+  "out": "5\n"
+ },
+ {
+  "key": "m6:?:3",
+  "m": 6,
+  "l": "Установка сторонних пакетов (pip)",
+  "code": "import requests\nprint(\"готово\")",
+  "skip": "network module"
+ },
+ {
+  "key": "m6:?:2",
+  "m": 6,
+  "l": "Работа с JSON",
+  "code": "import json\ndata = json.loads('{\"name\": \"Анна\"}')\nprint(data[\"name\"])",
+  "out": "Анна\n"
+ },
+ {
+  "key": "m6:?:3",
+  "m": 6,
+  "l": "Работа с JSON",
+  "code": "import json\nprint(json.dumps({\"key\": \"value\"}))",
+  "out": "{\"key\": \"value\"}\n"
+ },
+ {
+  "key": "m6:?:7",
+  "m": 6,
+  "l": "REST API: основы",
+  "code": "status = 200\nif status == 200:\n    print(\"Запрос успешен\")\nelif status == 404:\n    print(\"Не найдено\")",
+  "out": "Запрос успешен\n"
+ },
+ {
+  "key": "m6:?:3",
+  "m": 6,
+  "l": "Практика: Курс валют",
+  "code": "response = requests.get(\"https://api.example.com/rates\")\nif response.status_code == 200:\n    print(\"Курсы получены\")",
+  "skip": "runtime error"
+ },
+ {
+  "key": "m6:?:4",
+  "m": 6,
+  "l": "Практика: Курс валют",
+  "code": "import json\nrates = json.loads('{\"rates\": {\"RUB\": 92.5}}')\nprint(rates[\"rates\"][\"RUB\"])",
+  "out": "92.5\n"
+ },
+ {
+  "key": "m6:?:6",
+  "m": 6,
+  "l": "Практика: Курс валют",
+  "code": "params = {\"base\": \"USD\", \"symbols\": \"RUB\"}\nprint(params)",
+  "out": "{'base': 'USD', 'symbols': 'RUB'}\n"
+ },
+ {
+  "key": "m6:?:8",
+  "m": 6,
+  "l": "Практика: Курс валют",
+  "code": "rate = 92.5\namount_usd = 10\nprint(amount_usd * rate)",
+  "out": "925.0\n"
+ },
+ {
+  "key": "m6:?:11",
+  "m": 6,
+  "l": "Практика: Курс валют",
+  "code": "def convert(amount, rate):\n    if rate > 0:\n        return amount * rate\nprint(convert(100, 91.3))",
+  "out": "9130.0\n"
+ },
+ {
+  "key": "m7:?:1",
+  "m": 7,
+  "l": "Методы строк: split, join, strip",
+  "code": "text = \"яблоко груша слива\"\nprint(text.split())",
+  "out": "['яблоко', 'груша', 'слива']\n"
+ },
+ {
+  "key": "m7:?:3",
+  "m": 7,
+  "l": "Методы строк: split, join, strip",
+  "code": "print(\"-\".join([\"a\", \"b\"]))",
+  "out": "a-b\n"
+ },
+ {
+  "key": "m7:?:8",
+  "m": 7,
+  "l": "Методы строк: split, join, strip",
+  "code": "line = \"Анна,25\"\nprint(line.split(\",\"))",
+  "out": "['Анна', '25']\n"
+ },
+ {
+  "key": "m7:?:1",
+  "m": 7,
+  "l": "Форматирование строк: f-строки, format",
+  "code": "print(\"{} + {} = {}\".format(2, 3, 5))",
+  "out": "2 + 3 = 5\n"
+ },
+ {
+  "key": "m7:?:3",
+  "m": 7,
+  "l": "Форматирование строк: f-строки, format",
+  "code": "price = 99.5\nprint(f\"Цена: {price:.2f} руб.\")",
+  "out": "Цена: 99.50 руб.\n"
+ },
+ {
+  "key": "m7:?:8",
+  "m": 7,
+  "l": "Форматирование строк: f-строки, format",
+  "code": "n = 7\nprint(f\"Квадрат: {n * n}\")",
+  "out": "Квадрат: 49\n"
+ },
+ {
+  "key": "m7:?:1",
+  "m": 7,
+  "l": "Регулярные выражения (модуль re)",
+  "code": "import re\nprint(re.findall(r\"\\d+\", \"Цена 100, скидка 5\"))",
+  "out": "['100', '5']\n"
+ },
+ {
+  "key": "m7:?:4",
+  "m": 7,
+  "l": "Регулярные выражения (модуль re)",
+  "code": "import re\ntext = \"тел: 123 456\"\nprint(re.sub(r\"\\d\", \"#\", text))",
+  "out": "тел: ### ###\n"
+ },
+ {
+  "key": "m7:?:1",
+  "m": 7,
+  "l": "Генераторы списков и условия",
+  "code": "nums = [5, 12, 7, 19]\nbig = [x for x in nums if x > 10]\nprint(big)",
+  "out": "[12, 19]\n"
+ },
+ {
+  "key": "m7:?:3",
+  "m": 7,
+  "l": "Генераторы списков и условия",
+  "code": "nums = [-2, 5, -1]\nlabels = [\"полож.\" if x > 0 else \"отриц.\" for x in nums]\nprint(labels)",
+  "out": "['отриц.', 'полож.', 'отриц.']\n"
+ },
+ {
+  "key": "m7:?:5",
+  "m": 7,
+  "l": "Генераторы списков и условия",
+  "code": "words = [\"кот\", \"собака\", \"ёж\"]\nlong = [w for w in words if len(w) > 3]\nprint(long)",
+  "out": "['собака']\n"
+ },
+ {
+  "key": "m7:?:1",
+  "m": 7,
+  "l": "Сортировка, фильтрация и агрегация",
+  "code": "nums = [3, 1, 2]\nprint(sorted(nums))",
+  "out": "[1, 2, 3]\n"
+ },
+ {
+  "key": "m7:?:3",
+  "m": 7,
+  "l": "Сортировка, фильтрация и агрегация",
+  "code": "names = [\"Пётр\", \"Ан\", \"Лев\"]\nprint(sorted(names, key=len))",
+  "out": "['Ан', 'Лев', 'Пётр']\n"
+ },
+ {
+  "key": "m7:?:5",
+  "m": 7,
+  "l": "Сортировка, фильтрация и агрегация",
+  "code": "nums = [10, 5, 8]\nprint(min(nums), max(nums), sum(nums))",
+  "out": "5 10 23\n"
+ },
+ {
+  "key": "m7:?:0",
+  "m": 7,
+  "l": "Практика: Анализатор транзакций",
+  "code": "rows = \"перевод 500,покупка 1200\"\nprint(rows.split(\",\"))",
+  "out": "['перевод 500', 'покупка 1200']\n"
+ },
+ {
+  "key": "m7:?:2",
+  "m": 7,
+  "l": "Практика: Анализатор транзакций",
+  "code": "parts = [\"перевод\", \"500\"]\namount = int(parts[1])\nprint(amount + 100)",
+  "out": "600\n"
+ },
+ {
+  "key": "m7:?:4",
+  "m": 7,
+  "l": "Практика: Анализатор транзакций",
+  "code": "text = \"  1250  \"\nprint(int(text.strip()))",
+  "out": "1250\n"
+ },
+ {
+  "key": "m7:?:6",
+  "m": 7,
+  "l": "Практика: Анализатор транзакций",
+  "code": "amounts = [500, -200, 300, -100]\nincome = sum(x for x in amounts if x > 0)\nprint(income)",
+  "out": "800\n"
+ },
+ {
+  "key": "m7:?:8",
+  "m": 7,
+  "l": "Практика: Анализатор транзакций",
+  "code": "amounts = [500, -200, 300, -100]\nprint(max(amounts), min(amounts))",
+  "out": "500 -200\n"
+ },
+ {
+  "key": "m7:?:9",
+  "m": 7,
+  "l": "Практика: Анализатор транзакций",
+  "code": "amounts = [500, -200, 300, -100]\nprint(sorted(amounts, reverse=True)[:2])",
+  "out": "[500, 300]\n"
+ },
+ {
+  "key": "m7:?:10",
+  "m": 7,
+  "l": "Практика: Анализатор транзакций",
+  "code": "import re\ntext = \"оплата: 450.50 руб.\"\nm = re.findall(r\"\\d+\\.\\d+\", text)\nprint(m)",
+  "out": "['450.50']\n"
+ },
+ {
+  "key": "m7:?:13",
+  "m": 7,
+  "l": "Практика: Анализатор транзакций",
+  "code": "def analyze(amounts):\n    return sum(amounts), max(amounts)\ntotal, top = analyze([100, -50, 200])\nprint(top)",
+  "out": "200\n"
+ },
+ {
+  "key": "m8:?:5",
+  "m": 8,
+  "l": "Классы и объекты",
+  "code": "class Dog:\n    pass\nrex = Dog()\nprint(type(rex))",
+  "out": "<class '__main__.Dog'>\n"
+ },
+ {
+  "key": "m8:?:2",
+  "m": 8,
+  "l": "Метод __init__ и self",
+  "code": "class User:\n    def __init__(self, name):\n        self.name = name\nu = User(\"Анна\")\nprint(u.name)",
+  "out": "Анна\n"
+ },
+ {
+  "key": "m8:?:5",
+  "m": 8,
+  "l": "Метод __init__ и self",
+  "code": "class Product:\n    def __init__(self, name, price):\n        self.name = name\n        self.price = price\np = Product(\"Футболка\", 1500)\nprint(p.price)",
+  "out": "1500\n"
+ },
+ {
+  "key": "m8:?:3",
+  "m": 8,
+  "l": "Атрибуты экземпляра и класса",
+  "code": "class Account:\n    currency = \"RUB\"\na = Account()\nprint(a.currency)",
+  "out": "RUB\n"
+ },
+ {
+  "key": "m8:?:6",
+  "m": 8,
+  "l": "Атрибуты экземпляра и класса",
+  "code": "class Account:\n    currency = \"RUB\"\n    def __init__(self, balance):\n        self.balance = balance\na = Account(500)\nprint(a.balance, a.currency)",
+  "out": "500 RUB\n"
+ },
+ {
+  "key": "m8:?:1",
+  "m": 8,
+  "l": "Методы класса",
+  "code": "class Counter:\n    def __init__(self):\n        self.value = 0\n    def add(self):\n        self.value += 1\nc = Counter()\nc.add()\nc.add()\nprint(c.value)",
+  "out": "2\n"
+ },
+ {
+  "key": "m8:?:6",
+  "m": 8,
+  "l": "Методы класса",
+  "code": "class BankAccount:\n    def __init__(self):\n        self.balance = 0\n    def deposit(self, amount):\n        self.balance += amount\naccount = BankAccount()\naccount.deposit(500)\naccount.deposit(150)\nprint(account.balance)",
+  "out": "650\n"
+ },
+ {
+  "key": "m8:?:1",
+  "m": 8,
+  "l": "Наследование",
+  "code": "class Animal:\n    def speak(self):\n        print(\"звук\")\nclass Dog(Animal):\n    pass\nd = Dog()\nd.speak()",
+  "out": "звук\n"
+ },
+ {
+  "key": "m8:?:3",
+  "m": 8,
+  "l": "Наследование",
+  "code": "class Animal:\n    def speak(self):\n        print(\"...\")\nclass Dog(Animal):\n    def speak(self):\n        print(\"Гав!\")\nDog().speak()",
+  "out": "Гав!\n"
+ },
+ {
+  "key": "m8:?:8",
+  "m": 8,
+  "l": "Наследование",
+  "code": "class Animal:\n    def __init__(self, name):\n        self.name = name\nclass Dog(Animal):\n    def __init__(self, name):\n        super().__init__(name)\n        self.legs = 4\nd = Dog(\"Рекс\")\nprint(d.name, d.legs)",
+  "out": "Рекс 4\n"
+ },
+ {
+  "key": "m8:?:3",
+  "m": 8,
+  "l": "Инкапсуляция и приватные атрибуты",
+  "code": "class Account:\n    def __init__(self):\n        self.__balance = 0\n    def add(self, amount):\n        if amount > 0:\n            self.__balance += amount\n    def get_balance(self):\n        return self.__balance\na = Account()\na.add(100)\nprint(a.get_balance())",
+  "out": "100\n"
+ },
+ {
+  "key": "m8:?:6",
+  "m": 8,
+  "l": "Инкапсуляция и приватные атрибуты",
+  "code": "class Wallet:\n    def __init__(self):\n        self.__cash = 10\nw = Wallet()\nprint(w._Wallet__cash)",
+  "out": "10\n"
+ },
+ {
+  "key": "m8:?:1",
+  "m": 8,
+  "l": "Полиморфизм",
+  "code": "class Dog:\n    def speak(self):\n        return \"Гав\"\nclass Cat:\n    def speak(self):\n        return \"Мяу\"\nfor pet in [Dog(), Cat()]:\n    print(pet.speak())",
+  "out": "Гав\nМяу\n"
+ },
+ {
+  "key": "m8:?:4",
+  "m": 8,
+  "l": "Полиморфизм",
+  "code": "def make_sound(animal):\n    print(animal.speak())\nclass Bird:\n    def speak(self):\n        return \"Чик-чирик\"\nmake_sound(Bird())",
+  "out": "Чик-чирик\n"
+ },
+ {
+  "key": "m8:?:2",
+  "m": 8,
+  "l": "Магические методы (__str__, __len__, __repr__)",
+  "code": "class Book:\n    def __init__(self, title):\n        self.title = title\n    def __str__(self):\n        return f\"Книга: {self.title}\"\nb = Book(\"Тёмная башня\")\nprint(b)",
+  "out": "Книга: Тёмная башня\n"
+ },
+ {
+  "key": "m8:?:4",
+  "m": 8,
+  "l": "Магические методы (__str__, __len__, __repr__)",
+  "code": "class Basket:\n    def __init__(self, items):\n        self.items = items\n    def __len__(self):\n        return len(self.items)\nb = Basket([\"хлеб\", \"молоко\"])\nprint(len(b))",
+  "out": "2\n"
+ },
+ {
+  "key": "m8:?:4",
+  "m": 8,
+  "l": "Декораторы классов",
+  "code": "class MathUtils:\n    @staticmethod\n    def add(a, b):\n        return a + b\nprint(MathUtils.add(2, 3))",
+  "out": "5\n"
+ },
+ {
+  "key": "m8:?:6",
+  "m": 8,
+  "l": "Декораторы классов",
+  "code": "class Thermo:\n    def __init__(self, cels):\n        self._cels = cels\n    @property\n    def fahrenheit(self):\n        return self._cels * 9 / 5 + 32\nt = Thermo(0)\nprint(t.fahrenheit)",
+  "out": "32.0\n"
+ },
+ {
+  "key": "m8:?:1",
+  "m": 8,
+  "l": "Практика: Зоопарк объектов",
+  "code": "class Animal:\n    def __init__(self, name):\n        self.name = name\nrex = Animal(\"Рекс\")\nprint(rex.name)",
+  "out": "Рекс\n"
+ },
+ {
+  "key": "m8:?:3",
+  "m": 8,
+  "l": "Практика: Зоопарк объектов",
+  "code": "class Animal:\n    def __init__(self, name):\n        self.name = name\n    def speak(self):\n        print(f\"{self.name} издаёт звук\")\nanimal = Animal(\"Неизвестное\")\nanimal.speak()",
+  "out": "Неизвестное издаёт звук\n"
+ },
+ {
+  "key": "m8:?:4",
+  "m": 8,
+  "l": "Практика: Зоопарк объектов",
+  "code": "class Animal:\n    pass\nclass Dog(Animal):\n    def speak(self):\n        return \"Гав!\"\nd = Dog()\nprint(d.speak())",
+  "out": "Гав!\n"
+ },
+ {
+  "key": "m8:?:7",
+  "m": 8,
+  "l": "Практика: Зоопарк объектов",
+  "code": "class Animal:\n    def __init__(self, name):\n        self.name = name\nclass Dog(Animal):\n    def __init__(self, name):\n        super().__init__(name)\n        self.legs = 4\nrex = Dog(\"Рекс\")\nprint(rex.name, rex.legs)",
+  "out": "Рекс 4\n"
+ },
+ {
+  "key": "m8:?:8",
+  "m": 8,
+  "l": "Практика: Зоопарк объектов",
+  "code": "class Dog:\n    def speak(self):\n        return \"Гав\"\nclass Cat:\n    def speak(self):\n        return \"Мяу\"\nfor pet in [Dog(), Cat()]:\n    print(pet.speak())",
+  "out": "Гав\nМяу\n"
+ },
+ {
+  "key": "m8:?:9",
+  "m": 8,
+  "l": "Практика: Зоопарк объектов",
+  "code": "class Animal:\n    def __init__(self, name):\n        self.name = name\n    def __str__(self):\n        return f\"Животное: {self.name}\"\nprint(Animal(\"Тузик\"))",
+  "out": "Животное: Тузик\n"
+ },
+ {
+  "key": "m8:?:11",
+  "m": 8,
+  "l": "Практика: Зоопарк объектов",
+  "code": "class Animal:\n    def __init__(self, name):\n        self.name = name\n        self.__health = 100\n    def get_health(self):\n        return self.__health\na = Animal(\"Мурка\")\nprint(a.get_health())",
+  "out": "100\n"
+ },
+ {
+  "key": "m9:?:3",
+  "m": 9,
+  "l": "Заголовки запросов и параметры",
+  "code": "url = \"https://api.site.com/search\"\nparams = {\"q\": \"кот\", \"page\": 2}\nprint(f\"{url}?\" + \"&\".join(f\"{k}={v}\" for k, v in params.items()))",
+  "out": "https://api.site.com/search?q=кот&page=2\n"
+ },
+ {
+  "key": "m9:?:4",
+  "m": 9,
+  "l": "POST-запросы и отправка данных",
+  "code": "payload = {\"prompt\": \"Привет!\"}\nprint(payload)",
+  "out": "{'prompt': 'Привет!'}\n"
+ },
+ {
+  "key": "m9:?:4",
+  "m": 9,
+  "l": "Обработка ошибок API",
+  "code": "try:\n    result = 1 / 0\nexcept ZeroDivisionError:\n    print(\"На ноль делить нельзя\")",
+  "out": "На ноль делить нельзя\n"
+ },
+ {
+  "key": "m9:?:3",
+  "m": 9,
+  "l": "Практика: Мини ChatGPT",
+  "code": "token = \"секрет\"\nheaders = {\"Authorization\": f\"Bearer {token}\"}\nprint(headers)",
+  "out": "{'Authorization': 'Bearer секрет'}\n"
+ },
+ {
+  "key": "m9:?:6",
+  "m": 9,
+  "l": "Практика: Мини ChatGPT",
+  "code": "payload = {\"prompt\": \"Расскажи анекдот\"}\nprint(payload[\"prompt\"])",
+  "out": "Расскажи анекдот\n"
+ },
+ {
+  "key": "m9:?:7",
+  "m": 9,
+  "l": "Практика: Мини ChatGPT",
+  "code": "import requests\nurl = \"https://api.ai.example/generate\"\nheaders = {\"Authorization\": \"Bearer key\"}\npayload = {\"prompt\": \"Привет!\"}\nr = requests.post(url, json=payload, headers=headers)\nprint(r.status_code)",
+  "skip": "network module"
+ },
+ {
+  "key": "m9:?:9",
+  "m": 9,
+  "l": "Практика: Мини ChatGPT",
+  "code": "data = {\"choices\": [{\"content\": \"Привет, друг!\"}]}\nprint(data[\"choices\"][0][\"content\"])",
+  "out": "Привет, друг!\n"
+ },
+ {
+  "key": "m9:?:11",
+  "m": 9,
+  "l": "Практика: Мини ChatGPT",
+  "code": "try:\n    r = requests.post(url, json=payload)\n    print(\"Отправлено\")\nexcept requests.RequestException:\n    print(\"Сбой сети\")",
+  "skip": "runtime error"
+ },
+ {
+  "key": "m9:?:12",
+  "m": 9,
+  "l": "Практика: Мини ChatGPT",
+  "code": "def ask(message):\n    payload = {\"prompt\": message}\n    return payload[\"prompt\"]\nprint(ask(\"Как дела?\"))",
+  "out": "Как дела?\n"
+ },
+ {
+  "key": "m9:?:13",
+  "m": 9,
+  "l": "Практика: Мини ChatGPT",
+  "code": "while True:\n    msg = input()\n    if msg == \"выход\":\n        print(\"Пока!\")\n        break\n    print(f\"Бот: {msg}\")",
+  "skip": "input()"
+ }
+]

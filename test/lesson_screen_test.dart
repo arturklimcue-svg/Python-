@@ -187,6 +187,53 @@ void main() {
     expect(p.xp, 4);
   });
 
+  testWidgets('code_editor: запуск показывает вывод и засчитывает ответ',
+      (tester) async {
+    const lesson = Lesson(
+      id: 'm1-l1',
+      title: 'Редактор',
+      isPractice: false,
+      xp: 20,
+      exercises: [
+        Exercise(
+          kind: ExerciseKind.theoryTask,
+          text: 'Напиши программу',
+          task: Task(
+            type: TaskType.codeEditor,
+            question: 'Выведи Hello, world!',
+            starter: '# твой код\n',
+            stdin: '',
+            referenceOutput: 'Hello, world!\n',
+            solution: 'print("Hello, world!")',
+            explanation: 'print выводит текст',
+          ),
+        ),
+      ],
+    );
+    final p = _progress();
+    await p.load();
+
+    await tester.pumpWidget(
+      MaterialApp(home: LessonScreen(lesson: lesson, progress: p)),
+    );
+    expect(find.text('Запустить'), findsOneWidget);
+
+    await tester.enterText(
+        find.byType(TextField), 'print("Hello, world!")');
+    await tester.pump();
+    await tester.tap(find.text('Запустить'));
+    await tester.pump();
+
+    expect(find.text('Вывод программы'), findsOneWidget);
+    expect(find.textContaining('Hello, world!'), findsWidgets);
+
+    await tester.tap(find.text('Проверить'));
+    await tester.pump();
+
+    expect(find.text('Верно!'), findsOneWidget);
+    expect(p.xp, 4);
+  });
+
   testWidgets('онбординг: ввод имени открывает курс', (tester) async {
     const course = Course(
       title: 'Py',

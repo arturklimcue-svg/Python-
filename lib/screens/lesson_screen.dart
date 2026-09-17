@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/course.dart';
 import '../models/exercise.dart';
 import '../services/progress_service.dart';
+import '../services/python_interpreter.dart';
 import '../theme.dart';
 import '../widgets/code_block.dart';
 
@@ -27,7 +28,11 @@ class _LessonScreenState extends State<LessonScreen> {
   Set<int> _selected = {};
   bool? _tfAnswer;
   late TextEditingController _fillCtrl;
+  late TextEditingController _editorCtrl;
   List<int> _buildOrder = [];
+  String? _editorOutput;
+  String? _editorError;
+  bool _editorRan = false;
   int _rightCount = 0;
   bool _finished = false;
 
@@ -41,12 +46,26 @@ class _LessonScreenState extends State<LessonScreen> {
         .clamp(0, widget.lesson.exerciseCount - 1)
         .toInt();
     _fillCtrl = TextEditingController();
+    _editorCtrl = TextEditingController(
+      text: widget.lesson.exercises[_index].task?.starter ?? '',
+    );
   }
 
   @override
   void dispose() {
     _fillCtrl.dispose();
+    _editorCtrl.dispose();
     super.dispose();
+  }
+
+  void _runEditor() {
+    final task = _exercise.task!;
+    final result = runPython(_editorCtrl.text, stdin: task.stdin);
+    setState(() {
+      _editorRan = true;
+      _editorOutput = result.stdout;
+      _editorError = result.ok ? null : result.error;
+    });
   }
 
   void _checkAnswer() {
@@ -65,6 +84,12 @@ class _LessonScreenState extends State<LessonScreen> {
         correct = task.checkAnswer(_fillCtrl.text);
       case TaskType.codeBuild:
         correct = task.checkAnswer(List<int>.from(_buildOrder));
+      case TaskType.codeEditor:
+        final result = runPython(_editorCtrl.text, stdin: task.stdin);
+        _editorRan = true;
+        _editorOutput = result.stdout;
+        _editorError = result.ok ? null : result.error;
+        correct = result.ok && task.checkEditorOutput(result.stdout);
     }
     widget.progress.recordExercise(widget.lesson.id, _index, correct);
     setState(() {
@@ -100,6 +125,8 @@ class _LessonScreenState extends State<LessonScreen> {
         return _fillCtrl.text.trim().isNotEmpty;
       case TaskType.codeBuild:
         return _buildOrder.length == task.options.length;
+      case TaskType.codeEditor:
+        return _editorCtrl.text.trim().isNotEmpty;
     }
   }
 
@@ -117,6 +144,10 @@ class _LessonScreenState extends State<LessonScreen> {
         _tfAnswer = null;
         _fillCtrl.clear();
         _buildOrder = [];
+        _editorOutput = null;
+        _editorError = null;
+        _editorRan = false;
+        _editorCtrl.text = _exercise.task?.starter ?? '';
       });
       return;
     }
@@ -238,6 +269,12 @@ class _LessonScreenState extends State<LessonScreen> {
                           }
                         }),
                         onFillChanged: () => setState(() {}),
+                        editorCtrl: _editorCtrl,
+                        editorOutput: _editorOutput,
+                        editorError: _editorError,
+                        editorRan: _editorRan,
+                        onRun: _runEditor,
+                        onEditorChanged: () => setState(() {}),
                       ),
                     ],
                     const SizedBox(height: 20),
@@ -301,6 +338,12 @@ class _TaskPanel extends StatelessWidget {
   final void Function(bool) onSelectTf;
   final void Function(int) onBuildTap;
   final VoidCallback onFillChanged;
+  final TextEditingController editorCtrl;
+  final String? editorOutput;
+  final String? editorError;
+  final bool editorRan;
+  final VoidCallback onRun;
+  final VoidCallback onEditorChanged;
 
   const _TaskPanel({
     required this.task,
@@ -315,6 +358,12 @@ class _TaskPanel extends StatelessWidget {
     required this.onSelectTf,
     required this.onBuildTap,
     required this.onFillChanged,
+    required this.editorCtrl,
+    required this.editorOutput,
+    required this.editorError,
+    required this.editorRan,
+    required this.onRun,
+    required this.onEditorChanged,
   });
 
   @override
@@ -346,6 +395,8 @@ class _TaskPanel extends StatelessWidget {
         children.add(_buildFill());
       case TaskType.codeBuild:
         children.add(_buildCodeBuild());
+      case TaskType.codeEditor:
+        children.add(_buildCodeEditor());
     }
 
     if (submitted) {
@@ -381,6 +432,61 @@ class _TaskPanel extends StatelessWidget {
               onTap: submitted ? null : () => onBuildTap(i),
             ),
           ),
+      ],
+    );
+  }
+
+  Widget _buildCodeEditor() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Text(
+          'Напиши программу и нажми «Запустить». Вывод появится ниже — '
+          'даже если в коде ошибка.',
+          style: TextStyle(fontSize: 14, color: AppColors.textMuted),
+        ),
+        const SizedBox(height: 10),
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.codeBg,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: TextField(
+            controller: editorCtrl,
+            enabled: !submitted,
+            maxLines: null,
+            minLines: 6,
+            keyboardType: TextInputType.multiline,
+            textInputAction: TextInputAction.newline,
+            onChanged: (_) => onEditorChanged(),
+            style: const TextStyle(
+              fontFamily: 'monospace',
+              fontSize: 14,
+              height: 1.45,
+              color: AppColors.codeText,
+            ),
+            cursorColor: AppColors.codeText,
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+              hintText: '# твой код',
+              hintStyle: TextStyle(color: Color(0xFF8887A8)),
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        FilledButton.icon(
+          onPressed: submitted ? null : onRun,
+          icon: const Icon(Icons.play_arrow_rounded),
+          label: const Text('Запустить'),
+          style: FilledButton.styleFrom(
+            minimumSize: const Size.fromHeight(48),
+          ),
+        ),
+        if (editorRan) ...[
+          const SizedBox(height: 12),
+          _OutputPanel(output: editorOutput ?? '', error: editorError),
+        ],
       ],
     );
   }
@@ -470,6 +576,86 @@ class _TaskPanel extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+class _OutputPanel extends StatelessWidget {
+  final String output;
+  final String? error;
+
+  const _OutputPanel({required this.output, this.error});
+
+  @override
+  Widget build(BuildContext context) {
+    final hasError = error != null;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: hasError
+            ? AppColors.danger.withValues(alpha: 0.10)
+            : const Color(0xFFF0F1F7),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: hasError
+              ? AppColors.danger.withValues(alpha: 0.4)
+              : AppColors.textMuted.withValues(alpha: 0.25),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                hasError ? Icons.error_outline : Icons.terminal,
+                size: 16,
+                color: hasError ? AppColors.danger : AppColors.textMuted,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                'Вывод программы',
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12.5,
+                  color: hasError ? AppColors.danger : AppColors.textMuted,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          if (output.isNotEmpty)
+            SelectableText(
+              output,
+              style: const TextStyle(
+                fontFamily: 'monospace',
+                fontSize: 13,
+                height: 1.4,
+              ),
+            ),
+          if (hasError)
+            Text(
+              error!,
+              style: const TextStyle(
+                fontFamily: 'monospace',
+                fontSize: 13,
+                height: 1.4,
+                color: AppColors.danger,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          if (output.isEmpty && !hasError)
+            const Text(
+              '(пусто)',
+              style: TextStyle(
+                fontFamily: 'monospace',
+                fontSize: 13,
+                color: AppColors.textMuted,
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
@@ -698,6 +884,16 @@ class _FeedbackBar extends StatelessWidget {
               task.explanation,
               style: const TextStyle(fontSize: 14.5, height: 1.45),
             ),
+          ],
+          if (!correct &&
+              task.type == TaskType.codeEditor &&
+              task.solution.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            const Text(
+              'Пример решения:',
+              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5),
+            ),
+            CodeBlock(code: task.solution),
           ],
         ],
       ),

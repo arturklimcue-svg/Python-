@@ -4,6 +4,7 @@ import 'models/course.dart';
 import 'screens/ai_chat_screen.dart';
 import 'screens/course_tab.dart';
 import 'screens/onboarding_screen.dart';
+import 'screens/playground_screen.dart';
 import 'screens/profile_tab.dart';
 import 'screens/progress_tab.dart';
 import 'services/progress_service.dart';
@@ -91,6 +92,7 @@ class _HomeShellState extends State<HomeShell> {
     final screens = [
       CourseTab(course: widget.course, progress: widget.progress),
       ProgressTab(course: widget.course, progress: widget.progress),
+      const PlaygroundScreen(),
       _AiAssistantPlaceholder(widget.course, widget.progress),
       ProfileTab(course: widget.course, progress: widget.progress),
     ];
@@ -111,6 +113,11 @@ class _HomeShellState extends State<HomeShell> {
             icon: Icon(Icons.insights_outlined),
             selectedIcon: Icon(Icons.insights),
             label: 'Прогресс',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.terminal_outlined),
+            selectedIcon: Icon(Icons.terminal),
+            label: 'Код',
           ),
           NavigationDestination(
             icon: Icon(Icons.smart_toy_outlined),
