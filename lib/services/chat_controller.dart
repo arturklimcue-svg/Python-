@@ -248,5 +248,6 @@ class ChatController {
   void dispose() {
     _timeout?.cancel();
     _sub?.cancel();
+    _server.dispose();
   }
 }

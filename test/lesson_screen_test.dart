@@ -6,6 +6,7 @@ import 'package:kodik/models/exercise.dart';
 import 'package:kodik/screens/lesson_screen.dart';
 import 'package:kodik/services/progress_service.dart';
 import 'package:kodik/services/storage_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 ProgressService _progress() => ProgressService(MemoryStorage());
 
@@ -309,6 +310,7 @@ void main() {
   });
 
   testWidgets('онбординг: ввод имени открывает курс', (tester) async {
+    SharedPreferences.setMockInitialValues({});
     const course = Course(
       title: 'Py',
       modules: [

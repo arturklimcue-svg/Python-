@@ -115,7 +115,7 @@ void main() {
   });
 
   test('describeSendError для SocketException дружелюбно', () {
-    final msg = ChatController.describeSendError(SocketException('test'));
+    final msg = ChatController.describeSendError(const SocketException('test'));
     expect(msg, contains('opencode serve'));
   });
 }

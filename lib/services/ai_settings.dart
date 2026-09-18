@@ -18,17 +18,25 @@ class AiSettings {
   );
 
   static Future<AiSettings> load() async {
-    final prefs = await SharedPreferences.getInstance();
-    return AiSettings(
-      baseUrl: prefs.getString(_kBaseUrl) ?? defaults.baseUrl,
-      agent: prefs.getString(_kAgent) ?? defaults.agent,
-    );
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return AiSettings(
+        baseUrl: prefs.getString(_kBaseUrl) ?? defaults.baseUrl,
+        agent: prefs.getString(_kAgent) ?? defaults.agent,
+      );
+    } catch (_) {
+      return defaults;
+    }
   }
 
   Future<void> save() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_kBaseUrl, baseUrl);
-    await prefs.setString(_kAgent, agent);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_kBaseUrl, baseUrl);
+      await prefs.setString(_kAgent, agent);
+    } catch (_) {
+      // Не сохранилось — используем значения по умолчанию.
+    }
   }
 
   AiSettings copyWith({String? baseUrl, String? agent}) => AiSettings(
