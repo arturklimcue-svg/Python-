@@ -302,6 +302,7 @@ void main() {
 
     await tester.ensureVisible(find.text('Отправить'));
     await tester.enterText(find.byType(TextField).last, 'Аня');
+    await tester.pump();
     await tester.tap(find.text('Отправить'));
     await tester.pumpAndSettle();
 
