@@ -66,6 +66,9 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
 
   void _askAi() {
     final buffer = StringBuffer()
+      ..writeln('Это свободная песочница ученика — готового задания нет.')
+      ..writeln('Ученик экспериментирует с кодом. Помоги разобраться.')
+      ..writeln()
       ..writeln('Код из песочницы:')
       ..writeln('```python')
       ..writeln(_ctrl.text)

@@ -237,8 +237,20 @@ class ChatController {
   void Function()? get onUpdate => transcript.onUpdate;
   set onUpdate(void Function()? f) => transcript.onUpdate = f;
 
-  /// Начинает слушать SSE-поток и создаёт сессию.
-  Future<void> start() async {
+  Future<void>? _starting;
+
+  /// Начинает слушать SSE-поток и создаёт сессию. Повторные вызовы во время
+  /// запуска ждут тот же старт (защита от гонки с автоотправкой первого
+  /// сообщения из урока/песочницы).
+  Future<void> start() {
+    final inFlight = _starting;
+    if (inFlight != null) return inFlight;
+    final done = _doStart().whenComplete(() => _starting = null);
+    _starting = done;
+    return done;
+  }
+
+  Future<void> _doStart() async {
     if (_listening) return;
     _listening = true;
     try {

@@ -72,6 +72,52 @@ class _LessonScreenState extends State<LessonScreen> {
     super.dispose();
   }
 
+  void _askAi() {
+    final t = _exercise.task;
+    final buffer = StringBuffer()
+      ..writeln(
+        'Урок: ${widget.lesson.title}'
+        '${widget.lesson.isPractice ? ' (практика)' : ''}',
+      )
+      ..writeln()
+      ..writeln('Задание: ${_exercise.text}');
+    if (t != null && t.question.trim().isNotEmpty) {
+      buffer
+        ..writeln()
+        ..writeln('Вопрос: ${t.question}');
+    }
+    buffer
+      ..writeln()
+      ..writeln('Код ученика:')
+      ..writeln('```python')
+      ..writeln(_editorCtrl.text)
+      ..writeln('```');
+    final out = _editorOutput ?? '';
+    if (out.isNotEmpty) {
+      buffer
+        ..writeln()
+        ..writeln('Вывод программы:')
+        ..writeln(out);
+    }
+    if (_editorError != null) {
+      buffer
+        ..writeln()
+        ..writeln('Ошибка:')
+        ..writeln(_editorError);
+    }
+    if (t != null && t.referenceOutput.trim().isNotEmpty) {
+      buffer
+        ..writeln()
+        ..writeln('Ожидаемый вывод:')
+        ..writeln(t.referenceOutput.trim());
+    }
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => AiChatScreen(initialContext: buffer.toString()),
+      ),
+    );
+  }
+
   Future<void> _runEditor() async {
     final result = await PythonRuntime.run(
       _editorCtrl.text,
@@ -317,6 +363,7 @@ class _LessonScreenState extends State<LessonScreen> {
                         onSubmitInput: _submitEditorInput,
                         onInputChanged: () => setState(() {}),
                         onRun: _runEditor,
+                        onAskAi: _askAi,
                         onEditorChanged: () => setState(() {}),
                       ),
                     ],
@@ -395,6 +442,7 @@ class _TaskPanel extends StatelessWidget {
   final VoidCallback onSubmitInput;
   final VoidCallback onInputChanged;
   final VoidCallback onRun;
+  final VoidCallback onAskAi;
   final VoidCallback onEditorChanged;
 
   const _TaskPanel({
@@ -419,6 +467,7 @@ class _TaskPanel extends StatelessWidget {
     required this.onSubmitInput,
     required this.onInputChanged,
     required this.onRun,
+    required this.onAskAi,
     required this.onEditorChanged,
   });
 
@@ -452,7 +501,7 @@ class _TaskPanel extends StatelessWidget {
       case TaskType.codeBuild:
         children.add(_buildCodeBuild());
       case TaskType.codeEditor:
-        children.add(_buildCodeEditor(context));
+        children.add(_buildCodeEditor());
     }
 
     if (submitted) {
@@ -492,35 +541,7 @@ class _TaskPanel extends StatelessWidget {
     );
   }
 
-  void _askAi(BuildContext context) {
-    final buffer = StringBuffer()
-      ..writeln('Упражнение: ${task.question}')
-      ..writeln()
-      ..writeln('Код ученика:')
-      ..writeln('```python')
-      ..writeln(editorCtrl.text)
-      ..writeln('```');
-    final out = editorOutput ?? '';
-    if (out.isNotEmpty) {
-      buffer
-        ..writeln()
-        ..writeln('Вывод программы:')
-        ..writeln(out);
-    }
-    if (editorError != null) {
-      buffer
-        ..writeln()
-        ..writeln('Ошибка:')
-        ..writeln(editorError);
-    }
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => AiChatScreen(initialContext: buffer.toString()),
-      ),
-    );
-  }
-
-  Widget _buildCodeEditor(BuildContext context) {
+  Widget _buildCodeEditor() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -568,7 +589,7 @@ class _TaskPanel extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         OutlinedButton.icon(
-          onPressed: () => _askAi(context),
+          onPressed: onAskAi,
           icon: const Icon(Icons.smart_toy_outlined, size: 18),
           label: const Text('Спросить AI'),
           style: OutlinedButton.styleFrom(
