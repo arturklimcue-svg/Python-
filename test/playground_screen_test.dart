@@ -7,7 +7,9 @@ void main() {
   Future<void> pumpPlayground(WidgetTester tester) async {
     await tester.binding.setSurfaceSize(const Size(600, 1500));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    await tester.pumpWidget(const MaterialApp(home: PlaygroundScreen()));
+    await tester.pumpWidget(
+      const MaterialApp(home: Scaffold(body: PlaygroundScreen())),
+    );
     await tester.pumpAndSettle();
   }
 
