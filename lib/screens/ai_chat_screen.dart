@@ -222,7 +222,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
   @override
   Widget build(BuildContext context) {
     final chat = _chat;
-    final messages = chat?.messages ?? const <ChatMessage>[];
+    final messages = chat?.transcript.messages ?? const <ChatMessage>[];
     return Scaffold(
       appBar: AppBar(
         title: const Row(

@@ -4,7 +4,7 @@ import 'opencode_server.dart';
 
 /// Настройки подключения к AI-серверу (opencode serve в Termux).
 class AiSettings {
-  AiSettings({required this.baseUrl, required this.agent});
+  const AiSettings({required this.baseUrl, required this.agent});
 
   static const String _kBaseUrl = 'ai_base_url';
   static const String _kAgent = 'ai_agent';

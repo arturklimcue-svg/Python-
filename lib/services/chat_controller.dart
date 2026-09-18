@@ -138,7 +138,7 @@ class ChatTranscript {
     }
   }
 
-  static String describeEventError(Object error) {
+  static String describeEventError(dynamic error) {
     final map = error is Map<String, dynamic>
         ? error
         : <String, dynamic>{'raw': error};

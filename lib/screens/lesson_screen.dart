@@ -452,7 +452,7 @@ class _TaskPanel extends StatelessWidget {
       case TaskType.codeBuild:
         children.add(_buildCodeBuild());
       case TaskType.codeEditor:
-        children.add(_buildCodeEditor());
+        children.add(_buildCodeEditor(context));
     }
 
     if (submitted) {
@@ -492,7 +492,7 @@ class _TaskPanel extends StatelessWidget {
     );
   }
 
-  Future<void> _askAi(BuildContext context) {
+  void _askAi(BuildContext context) {
     final buffer = StringBuffer()
       ..writeln('Упражнение: ${task.question}')
       ..writeln()
@@ -520,7 +520,7 @@ class _TaskPanel extends StatelessWidget {
     );
   }
 
-  Widget _buildCodeEditor() {
+  Widget _buildCodeEditor(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
