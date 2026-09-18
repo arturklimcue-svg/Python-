@@ -5,7 +5,8 @@ JSON-строкой. Поведение повторяет встроенный 
 
 * ``print`` пишет в ``stdout``;
 * ``input()`` берёт очередную строку из списка, а если данные закончились —
-  возвращает пустую строку и увеличивает счётчик ``inputsMissing``;
+  выполнение прерывается и возвращается ``inputsMissing: 1``, чтобы UI
+  показал поле ввода (программа не падает с ошибкой);
 * ошибки возвращаются последней строкой трассировки.
 """
 
@@ -73,6 +74,10 @@ class _Stdin:
         return rest
 
 
+class _NeedsInput(Exception):
+    """Выполнение прервано: программе нужен ввод, а строк закончились."""
+
+
 def run(code, stdin_lines=None):
     """Выполняет код и возвращает JSON: ok / stdout / error / inputsMissing.
 
@@ -88,7 +93,6 @@ def run(code, stdin_lines=None):
     _install_blocker()
     lines = list(stdin_lines or [])
     out = io.StringIO()
-    missing = [0]
     stdin_obj = _Stdin(lines)
 
     def fake_input(prompt=""):
@@ -96,8 +100,7 @@ def run(code, stdin_lines=None):
             out.write(str(prompt))
         line = stdin_obj.readline()
         if line is None:
-            missing[0] += 1
-            return ""
+            raise _NeedsInput()
         return line.rstrip("\n")
 
     saved = (sys.stdin, sys.stdout, sys.stderr)
@@ -107,11 +110,13 @@ def run(code, stdin_lines=None):
         sys.stderr = out
         scope = {"__name__": "__main__", "input": fake_input}
         exec(compile(code, "<программа>", "exec"), scope)
-        return _result(True, out.getvalue(), "", missing[0])
+        return _result(True, out.getvalue(), "", 0)
+    except _NeedsInput:
+        return _result(True, out.getvalue(), "", 1)
     except BaseException:  # noqa: BLE001 - ученику нужна любая ошибка
         tb = traceback.format_exc().strip().splitlines()
         message = tb[-1] if tb else "Ошибка выполнения"
-        return _result(False, out.getvalue(), message, missing[0])
+        return _result(False, out.getvalue(), message, 0)
     finally:
         sys.stdin, sys.stdout, sys.stderr = saved
 

@@ -12,6 +12,11 @@ class PyError implements Exception {
   String toString() => message;
 }
 
+/// Бросается из builtin `input()`, когда в stdin закончились строки.
+/// Позволяет прервать выполнение и вернуть управление в UI,
+/// чтобы пользователь мог ввести данные через поле ввода.
+class _NeedsInputException implements Exception {}
+
 class PyRunResult {
   final bool ok;
   final String stdout;
@@ -36,6 +41,11 @@ PyRunResult runPython(String code, {String stdin = '', int? seed}) {
     interp.execProgram(program);
     return PyRunResult(true, interp.out.toString(), '',
         inputsMissing: interp.inputsMissing);
+  } on _NeedsInputException {
+    // Программа дошла до input(), а данных больше нет: прерываемся и просим
+    // UI показать поле ввода. Сохраняем уже выведенный stdout (промпт и т.п.).
+    return PyRunResult(true, interp.out.toString(), '',
+        inputsMissing: 1);
   } on PyError catch (e) {
     return PyRunResult(false, interp.out.toString(), e.message,
         inputsMissing: interp.inputsMissing);
@@ -2106,8 +2116,7 @@ class _Interp {
             if (line.endsWith('\r')) line = line.substring(0, line.length - 1);
             return line;
           }
-          inputsMissing++;
-          return '';
+          throw _NeedsInputException();
         });
       case 'len':
         return PyBuiltin('len', (args, kwargs) => _len(args[0]));

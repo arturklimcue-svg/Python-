@@ -119,7 +119,8 @@ void main() {
     final r = runPython('name = input("Как зовут? ")\nprint("Привет,", name)');
     expect(r.ok, isTrue, reason: r.error);
     expect(r.inputsMissing, 1);
-    expect(r.stdout, 'Как зовут? Привет, \n');
+    // Программа останавливается на input()-е, print ещё не выполнялся.
+    expect(r.stdout, 'Как зовут? ');
 
     final partial = runPython('a = input()\nb = input()', stdin: '1');
     expect(partial.inputsMissing, 1);
