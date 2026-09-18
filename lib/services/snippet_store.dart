@@ -68,9 +68,9 @@ class SnippetStore {
     try {
       final prefs = await SharedPreferences.getInstance();
       final raw = prefs.getString(_key);
-      if (raw == null || raw.isEmpty) return const [];
+      if (raw == null || raw.isEmpty) return [];
       final decoded = jsonDecode(raw);
-      if (decoded is! List) return const [];
+      if (decoded is! List) return [];
       final snippets = decoded
           .whereType<Map>()
           .map((e) => SavedSnippet.fromJson(Map<String, dynamic>.from(e)))
@@ -78,7 +78,7 @@ class SnippetStore {
       snippets.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
       return snippets;
     } catch (_) {
-      return const [];
+      return [];
     }
   }
 
