@@ -93,33 +93,10 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
       _toast('Сначала напиши код');
       return;
     }
-    final nameCtrl = TextEditingController(text: SavedSnippet.autoTitle(code));
     final title = await showDialog<String>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Сохранить набросок'),
-        content: TextField(
-          controller: nameCtrl,
-          autofocus: true,
-          maxLength: 40,
-          decoration: const InputDecoration(
-            labelText: 'Название',
-            hintText: 'например: Таблица умножения',
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Отмена'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(nameCtrl.text.trim()),
-            child: const Text('Сохранить'),
-          ),
-        ],
-      ),
+      builder: (_) => _SaveSnippetDialog(initialTitle: SavedSnippet.autoTitle(code)),
     );
-    nameCtrl.dispose();
     if (title == null || !mounted) return;
 
     final name = title.isEmpty ? SavedSnippet.autoTitle(code) : title;
@@ -409,6 +386,58 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
             canSubmit: _inputCtrl.text.trim().isNotEmpty,
           ),
         ],
+      ],
+    );
+  }
+}
+
+class _SaveSnippetDialog extends StatefulWidget {
+  const _SaveSnippetDialog({required this.initialTitle});
+
+  final String initialTitle;
+
+  @override
+  State<_SaveSnippetDialog> createState() => _SaveSnippetDialogState();
+}
+
+class _SaveSnippetDialogState extends State<_SaveSnippetDialog> {
+  late final TextEditingController _nameCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameCtrl = TextEditingController(text: widget.initialTitle);
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Сохранить набросок'),
+      content: TextField(
+        controller: _nameCtrl,
+        autofocus: true,
+        maxLength: 40,
+        decoration: const InputDecoration(
+          labelText: 'Название',
+          hintText: 'например: Таблица умножения',
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Отмена'),
+        ),
+        FilledButton(
+          onPressed: () =>
+              Navigator.of(context).pop(_nameCtrl.text.trim()),
+          child: const Text('Сохранить'),
+        ),
       ],
     );
   }
