@@ -74,7 +74,7 @@ public class KodikPythonPlugin implements FlutterPlugin, MethodChannel.MethodCal
                     }
                     json = Python.getInstance()
                             .getModule("kodik_runtime")
-                            .callAttr("run", code, new ArrayList<>(stdin))
+                            .callAttr("run", code, jsonArray(stdin))
                             .toString();
                 } catch (Throwable t) {
                     json = errorJson(t.getMessage() == null ? t.toString() : t.getMessage());
@@ -88,6 +88,18 @@ public class KodikPythonPlugin implements FlutterPlugin, MethodChannel.MethodCal
                 });
             }
         }).start();
+    }
+
+    private static String jsonArray(List<String> list) {
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < list.size(); i++) {
+            if (i > 0) {
+                sb.append(',');
+            }
+            sb.append(JSONObject.quote(list.get(i)));
+        }
+        sb.append(']');
+        return sb.toString();
     }
 
     private static String errorJson(String message) {

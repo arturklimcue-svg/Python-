@@ -74,7 +74,17 @@ class _Stdin:
 
 
 def run(code, stdin_lines=None):
-    """Выполняет код и возвращает JSON: ok / stdout / error / inputsMissing."""
+    """Выполняет код и возвращает JSON: ok / stdout / error / inputsMissing.
+
+    ``stdin_lines`` приходит из Java строкой JSON (список строк), но умеем
+    принимать и готовый список, чтобы код было удобно тестировать.
+    """
+    if isinstance(stdin_lines, str):
+        try:
+            parsed = json.loads(stdin_lines)
+            stdin_lines = parsed if isinstance(parsed, list) else []
+        except ValueError:
+            stdin_lines = []
     _install_blocker()
     lines = list(stdin_lines or [])
     out = io.StringIO()
