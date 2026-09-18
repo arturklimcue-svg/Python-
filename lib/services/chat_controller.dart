@@ -133,23 +133,53 @@ class ChatTranscript {
         }
         break;
       case 'session.error':
-        fail('Ошибка на стороне AI-сервера.');
+        final err = (event['properties'] as Map<String, dynamic>?)?['error'];
+        fail(
+          err != null
+              ? describeEventError(err)
+              : 'Ошибка на стороне AI-сервера.',
+        );
         break;
     }
   }
 
+  /// Форматирует ошибку сервера в понятное сообщение и добавляет подсказку
+  /// по частым причинам.
   static String describeEventError(dynamic error) {
     final map = error is Map<String, dynamic>
         ? error
-        : <String, dynamic>{'raw': error};
-    final data = map['data'];
-    final message = data is Map<String, dynamic> ? data['message'] : map['raw'];
-    final status = data is Map<String, dynamic> ? data['statusCode'] : null;
+        : <String, dynamic>{};
+    final data = map['data'] is Map<String, dynamic>
+        ? map['data'] as Map<String, dynamic>
+        : <String, dynamic>{};
+    final status = data['statusCode'] ?? map['statusCode'];
+    final message = data['message'] ?? map['message'] ?? map['name'];
+
     final head = status != null
-        ? 'AI-сервер вернул ошибку ($status)'
+        ? 'Ошибка AI-сервера, код $status'
         : 'Ошибка AI-сервера';
-    final detail = message != null ? ': $message' : '';
-    return '$head$detail';
+    final detail = message is String && message.trim().isNotEmpty
+        ? ': ${message.trim()}'
+        : '';
+
+    final lower = message is String ? message.toLowerCase() : '';
+    var hint = '';
+    if (lower.contains('free tier') ||
+        (lower.contains('free') && lower.contains('opencode'))) {
+      hint =
+          '\nБесплатный тариф opencode работает только внутри терминала. '
+          'Подключи ключ провайдера в Termux: opencode auth login';
+    } else if (lower.contains('agent') || lower.contains('not found')) {
+      hint =
+          '\nПохоже, агент не найден. Убедись, что агент "tutor" задан в '
+          'конфиге opencode (docs/termux-server.md) или укажи другого агента '
+          'в настройках приложения.';
+    } else if (status == 401 || status == 403) {
+      hint =
+          '\nДля запросов к модели нужны права провайдера. Проверь доступ: '
+          'opencode auth login';
+    }
+    return '$head$detail$hint';
   }
 }
 
@@ -238,7 +268,17 @@ class ChatController {
   }
 
   static String describeSendError(Object e) {
-    if (e is OpenCodeException || e is SocketException || e is HttpException) {
+    if (e is OpenCodeException) {
+      if (e.message.startsWith('Сервер отверг сообщение')) {
+        return 'AI-сервер отверг сообщение:\n${e.message}';
+      }
+      if (e.message.startsWith('Сервер недоступен')) {
+        return 'AI-сервер недоступен. Проверь, что opencode serve запущен.';
+      }
+      return 'Не удалось связаться с AI-сервером. Убедись, что в Termux '
+          'запущен сервер: opencode serve.';
+    }
+    if (e is SocketException || e is HttpException) {
       return 'Не удалось связаться с AI-сервером. '
           'Убедись, что в Termux запущен сервер: opencode serve.';
     }

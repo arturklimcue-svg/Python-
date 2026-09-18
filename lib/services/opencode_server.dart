@@ -76,10 +76,20 @@ class OpenCodeServer {
       }),
     );
     final res = await req.close().timeout(const Duration(seconds: 8));
-    await res.drain<void>();
     if (res.statusCode != 200 && res.statusCode != 204) {
-      throw OpenCodeException('Сервер отверг сообщение (${res.statusCode})');
+      String body = '';
+      try {
+        body = await res
+            .transform(utf8.decoder)
+            .join()
+            .timeout(const Duration(seconds: 8));
+      } catch (_) {}
+      throw OpenCodeException(
+        'Сервер отверг сообщение (${res.statusCode})'
+        '${body.trim().isNotEmpty ? ': ${body.trim()}' : ''}',
+      );
     }
+    await res.drain<void>();
   }
 
   /// Прерывает текущий ответ модели.

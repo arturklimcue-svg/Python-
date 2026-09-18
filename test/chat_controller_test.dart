@@ -93,6 +93,45 @@ void main() {
       expect(t.messages.last.text, contains('access denied'));
     });
 
+    test('session.error с detail про бесплатный тариф показывает подсказку', () {
+      final t = ChatTranscript();
+      t.userMessage('Почему молчишь?');
+      t.begin();
+      t.handleEvent(userUpdated('msg_u'));
+      t.handleEvent({
+        'type': 'session.error',
+        'properties': {
+          'sessionID': 's1',
+          'error': {
+            'name': 'APIError',
+            'data': {
+              'message': 'Error from provider (Console): OpenCode\'s free tier '
+                  'can only be used from within OpenCode',
+              'statusCode': 403,
+            },
+          },
+        },
+      });
+      expect(t.isAwaiting, isFalse);
+      expect(t.messages.last.text, contains('403'));
+      expect(t.messages.last.text, contains('free tier'));
+      expect(t.messages.last.text, contains('opencode auth login'));
+    });
+
+    test('session.error без detail даёт общее сообщение', () {
+      final t = ChatTranscript();
+      t.userMessage('х');
+      t.begin();
+      t.setUserMessageId('msg_u');
+      t.handleEvent({
+        'type': 'session.error',
+        'properties': {'sessionID': 's1', 'error': {'name': 'Boom'}},
+      });
+      expect(t.isAwaiting, isFalse);
+      expect(t.messages.last.text, contains('Ошибка AI-сервера'));
+      expect(t.messages.last.text, contains('Boom'));
+    });
+
     test('вне ответа часть не стримится', () {
       final t = ChatTranscript();
       t.userMessage('Хай');
