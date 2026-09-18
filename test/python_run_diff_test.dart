@@ -22,6 +22,11 @@ void main() {
     expect(diffOutputTail(prev, next), next);
   });
 
+  test('diffOutputTail когда вывод это уже виденный префикс — пусто', () {
+    const prev = 'Ход: Принято: а\nХод: ';
+    expect(diffOutputTail(prev, 'Ход: '), '');
+  });
+
   test('диалог по шагам похож на настоящую консоль', () {
     const code = 'while True:\n'
         '    line = input("Ход: ")\n'
