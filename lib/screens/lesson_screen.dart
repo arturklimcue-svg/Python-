@@ -7,6 +7,7 @@ import '../services/python_runtime.dart';
 import '../theme.dart';
 import '../widgets/code_block.dart';
 import '../widgets/python_input_bar.dart';
+import 'ai_chat_screen.dart';
 
 class LessonScreen extends StatefulWidget {
   final Lesson lesson;
@@ -491,6 +492,34 @@ class _TaskPanel extends StatelessWidget {
     );
   }
 
+  Future<void> _askAi(BuildContext context) {
+    final buffer = StringBuffer()
+      ..writeln('Упражнение: ${task.question}')
+      ..writeln()
+      ..writeln('Код ученика:')
+      ..writeln('```python')
+      ..writeln(editorCtrl.text)
+      ..writeln('```');
+    final out = editorOutput ?? '';
+    if (out.isNotEmpty) {
+      buffer
+        ..writeln()
+        ..writeln('Вывод программы:')
+        ..writeln(out);
+    }
+    if (editorError != null) {
+      buffer
+        ..writeln()
+        ..writeln('Ошибка:')
+        ..writeln(editorError);
+    }
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => AiChatScreen(initialContext: buffer.toString()),
+      ),
+    );
+  }
+
   Widget _buildCodeEditor() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -536,6 +565,16 @@ class _TaskPanel extends StatelessWidget {
           icon: const Icon(Icons.play_arrow_rounded),
           label: const Text('Запустить'),
           style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+        ),
+        const SizedBox(height: 8),
+        OutlinedButton.icon(
+          onPressed: () => _askAi(context),
+          icon: const Icon(Icons.smart_toy_outlined, size: 18),
+          label: const Text('Спросить AI'),
+          style: OutlinedButton.styleFrom(
+            minimumSize: const Size.fromHeight(44),
+            foregroundColor: AppColors.primary,
+          ),
         ),
         if (editorRan) ...[
           const SizedBox(height: 12),

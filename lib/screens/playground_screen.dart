@@ -5,6 +5,7 @@ import '../services/python_runtime.dart';
 import '../theme.dart';
 import '../widgets/python_input_bar.dart';
 import '../widgets/python_output_panel.dart';
+import 'ai_chat_screen.dart';
 
 class PlaygroundScreen extends StatefulWidget {
   const PlaygroundScreen({super.key});
@@ -61,6 +62,32 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
     _inputs.add(_inputCtrl.text);
     _inputCtrl.clear();
     _run();
+  }
+
+  void _askAi() {
+    final buffer = StringBuffer()
+      ..writeln('Код из песочницы:')
+      ..writeln('```python')
+      ..writeln(_ctrl.text)
+      ..writeln('```');
+    final out = _output ?? '';
+    if (out.isNotEmpty) {
+      buffer
+        ..writeln()
+        ..writeln('Вывод программы:')
+        ..writeln(out);
+    }
+    if (_error != null) {
+      buffer
+        ..writeln()
+        ..writeln('Ошибка:')
+        ..writeln(_error);
+    }
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => AiChatScreen(initialContext: buffer.toString()),
+      ),
+    );
   }
 
   @override
@@ -138,6 +165,16 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
               : const Icon(Icons.play_arrow_rounded),
           label: Text(_running ? 'Выполняется…' : 'Запустить'),
           style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+        ),
+        const SizedBox(height: 8),
+        OutlinedButton.icon(
+          onPressed: _askAi,
+          icon: const Icon(Icons.smart_toy_outlined, size: 18),
+          label: const Text('Спросить AI'),
+          style: OutlinedButton.styleFrom(
+            minimumSize: const Size.fromHeight(44),
+            foregroundColor: AppColors.primary,
+          ),
         ),
         if (_ran) ...[
           const SizedBox(height: 12),
