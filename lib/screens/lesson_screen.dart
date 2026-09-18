@@ -32,6 +32,9 @@ class _LessonScreenState extends State<LessonScreen> {
   List<String> _editorInput = [];
   bool _editorNeedsInput = false;
   String? _editorOutput;
+
+  /// Полный вывод последнего запуска: по нему считаем «хвост» для следующего.
+  String _lastEditorStdout = '';
   String? _editorError;
   bool _editorRan = false;
   int _rightCount = 0;
@@ -61,6 +64,7 @@ class _LessonScreenState extends State<LessonScreen> {
     }
     _editorInput = lines;
     _editorNeedsInput = false;
+    _lastEditorStdout = '';
     _inputCtrl.clear();
   }
 
@@ -118,7 +122,7 @@ class _LessonScreenState extends State<LessonScreen> {
     );
   }
 
-  Future<void> _runEditor() async {
+  Future<void> _runEditor({bool fresh = true}) async {
     final result = await PythonRuntime.run(
       _editorCtrl.text,
       stdin: _editorInput.join('\n'),
@@ -126,16 +130,21 @@ class _LessonScreenState extends State<LessonScreen> {
     if (!mounted) return;
     setState(() {
       _editorRan = true;
-      _editorOutput = result.stdout;
+      _editorOutput = fresh
+          ? result.stdout
+          : diffOutputTail(_lastEditorStdout, result.stdout);
+      _lastEditorStdout = result.stdout;
       _editorError = result.ok ? null : result.error;
       _editorNeedsInput = result.ok && result.inputsMissing > 0;
     });
   }
 
   void _submitEditorInput() {
-    _editorInput.add(_inputCtrl.text);
+    final text = _inputCtrl.text.trim();
+    if (text.isEmpty) return;
+    _editorInput.add(text);
     _inputCtrl.clear();
-    _runEditor();
+    _runEditor(fresh: false);
   }
 
   Future<void> _checkAnswer() async {
@@ -163,6 +172,7 @@ class _LessonScreenState extends State<LessonScreen> {
         );
         _editorRan = true;
         _editorOutput = result.stdout;
+        _lastEditorStdout = result.stdout;
         _editorError = result.ok ? null : result.error;
         _editorNeedsInput = result.ok && result.inputsMissing > 0;
         correct = await task.checkEditorCodeAsync(_editorCtrl.text);
@@ -607,6 +617,7 @@ class _TaskPanel extends StatelessWidget {
             controller: inputCtrl,
             onSubmit: onSubmitInput,
             onChanged: onInputChanged,
+            canSubmit: inputCtrl.text.trim().isNotEmpty,
           ),
         ],
       ],

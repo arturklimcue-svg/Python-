@@ -19,6 +19,7 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
   final _inputCtrl = TextEditingController();
   List<String> _inputs = [];
   String? _output;
+  String _lastStdout = '';
   String? _error;
   bool _ran = false;
   bool _running = false;
@@ -39,7 +40,7 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
     super.dispose();
   }
 
-  Future<void> _run() async {
+  Future<void> _run({bool fresh = false}) async {
     if (_running) return;
     setState(() => _running = true);
     PyRunResult result;
@@ -52,14 +53,17 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
     setState(() {
       _running = false;
       _ran = true;
-      _output = result.stdout;
+      _output = fresh ? result.stdout : diffOutputTail(_lastStdout, result.stdout);
+      _lastStdout = result.stdout;
       _needsInput = result.ok && result.inputsMissing > 0;
       _error = result.ok ? null : result.error;
     });
   }
 
   void _submitInput() {
-    _inputs.add(_inputCtrl.text);
+    final text = _inputCtrl.text.trim();
+    if (text.isEmpty) return;
+    _inputs.add(text);
     _inputCtrl.clear();
     _run();
   }
@@ -123,6 +127,7 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
                   _inputCtrl.clear();
                   _needsInput = false;
                   _output = null;
+                  _lastStdout = '';
                   _error = null;
                   _ran = false;
                 }),
@@ -158,7 +163,7 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
         ),
         const SizedBox(height: 10),
         FilledButton.icon(
-          onPressed: _running ? null : _run,
+          onPressed: _running ? null : () => _run(fresh: true),
           icon: _running
               ? const SizedBox(
                   width: 18,
@@ -189,6 +194,7 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
             controller: _inputCtrl,
             onSubmit: _submitInput,
             onChanged: () => setState(() {}),
+            canSubmit: _inputCtrl.text.trim().isNotEmpty,
           ),
         ],
       ],

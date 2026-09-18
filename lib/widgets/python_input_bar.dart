@@ -9,11 +9,16 @@ class PythonInputBar extends StatelessWidget {
   final VoidCallback onSubmit;
   final VoidCallback? onChanged;
 
+  /// Кнопку «Отправить» можно ли нажимать. Выключите, пока поле пустое,
+  /// чтобы пустой ввод не превращался в пустую строку для input().
+  final bool canSubmit;
+
   const PythonInputBar({
     super.key,
     required this.controller,
     required this.onSubmit,
     this.onChanged,
+    this.canSubmit = true,
   });
 
   @override
@@ -86,7 +91,7 @@ class PythonInputBar extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               FilledButton(
-                onPressed: onSubmit,
+                onPressed: canSubmit ? onSubmit : null,
                 style: FilledButton.styleFrom(
                   minimumSize: const Size(0, 44),
                   padding: const EdgeInsets.symmetric(horizontal: 16),

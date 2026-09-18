@@ -54,3 +54,16 @@ class PythonRuntime {
     return lines;
   }
 }
+
+/// Возвращает «хвост» нового вывода, который пользователь ещё не видел.
+///
+/// Программы с `input()` выполняются заново со всеми накопленными строками,
+/// поэтому обычный вывод повторяет всё сначала. Если новый вывод начинается
+/// с предыдущего — показываем только добавленные строки, и консоль растёт,
+/// как настоящая. Если вывод изменился с начала (например, `random`),
+/// отдаём весь новый вывод целиком.
+String diffOutputTail(String previous, String next) {
+  if (previous.isEmpty) return next;
+  if (next.startsWith(previous)) return next.substring(previous.length);
+  return next;
+}
