@@ -11,6 +11,19 @@ class ChatMessage {
 
   ChatMessage({required this.role, required this.text, DateTime? timestamp})
     : timestamp = timestamp ?? DateTime.now();
+
+  Map<String, dynamic> toJson() => {
+    'role': role,
+    'text': text,
+    'ts': timestamp.toIso8601String(),
+  };
+
+  static ChatMessage fromJson(Map<String, dynamic> json) => ChatMessage(
+    role: (json['role'] as String?) ?? 'user',
+    text: (json['text'] as String?) ?? '',
+    timestamp:
+        DateTime.tryParse((json['ts'] as String?) ?? '') ?? DateTime.now(),
+  );
 }
 
 /// Режим соединения с AI-сервером.
@@ -186,8 +199,9 @@ class ChatTranscript {
 
 /// Обвязка диалога сетью: сессия, SSE-подписка, таймаут.
 class ChatController {
-  ChatController({required OpenCodeServer server})
+  ChatController({required OpenCodeServer server, String? initialSessionId})
     : _server = server,
+      _sessionId = initialSessionId,
       transcript = ChatTranscript();
 
   final OpenCodeServer _server;
@@ -203,6 +217,20 @@ class ChatController {
   String? _agentNote;
 
   bool get isAwaiting => transcript.isAwaiting;
+
+  /// Текущая сессия opencode. Нулевая, пока сессия не создана.
+  String? get sessionId => _sessionId;
+
+  /// Создана новая сессия на сервере (или восстановлена работа с ней).
+  void Function(String sessionId)? onSessionCreated;
+
+  /// Сессия «умерла» на сервере (404), будет заведена новая.
+  void Function()? onSessionReplaced;
+
+  void _rememberSession(String id) {
+    _sessionId = id;
+    onSessionCreated?.call(id);
+  }
 
   /// Заметка о том, что агент из настроек не найден и использован другой.
   String? get agentNote => _agentNote;
@@ -255,7 +283,10 @@ class ChatController {
     if (_listening) return;
     _listening = true;
     try {
-      _sessionId ??= await _server.createSession();
+      if (_sessionId == null) {
+        final id = await _server.createSession();
+        _rememberSession(id);
+      }
     } catch (_) {
       _sessionId = null;
     }
@@ -290,18 +321,52 @@ class ChatController {
     });
 
     try {
-      if (_sessionId == null) {
-        await start();
+      var attempts = 0;
+      while (true) {
+        attempts++;
+        if (_sessionId == null) {
+          await start();
+        }
+        if (_sessionId == null) {
+          throw OpenCodeException('Сервер не создал сессию');
+        }
+        await _ensureAgent();
+        transcript.setUserMessageId(null);
+        try {
+          await _server.sendAsync(_sessionId!, '$kTutorSystemPrompt\n\n$trimmed');
+          break;
+        } on OpenCodeException catch (e) {
+          // Сессия исчезла на сервере (удалена/протухла) — заводим новую и
+          // шлём ещё раз, чтобы диалог не оборвался.
+          if (attempts < 2 && _isSessionGone(e)) {
+            _sessionId = null;
+            onSessionReplaced?.call();
+            continue;
+          }
+          rethrow;
+        }
       }
-      if (_sessionId == null) {
-        throw OpenCodeException('Сервер не создал сессию');
-      }
-      await _ensureAgent();
-      transcript.setUserMessageId(null);
-      await _server.sendAsync(_sessionId!, '$kTutorSystemPrompt\n\n$trimmed');
     } catch (e) {
       _timeout?.cancel();
       transcript.fail(describeSendError(e));
+    }
+  }
+
+  static bool _isSessionGone(Object e) {
+    if (e is! OpenCodeException) return false;
+    final m = e.message.toLowerCase();
+    return m.contains('(404)') || m.contains('not found') || m.contains('404');
+  }
+
+  /// Удаляет сессию на сервере (abort + delete), чтобы диалог не копился
+  /// в opencode. Текущий диалог в памяти сохраняется.
+  Future<void> removeSession() async {
+    final id = _sessionId;
+    if (id != null) {
+      await _server.abort(id);
+      await _server.deleteSession(id);
+      _sessionId = null;
+      onSessionReplaced?.call();
     }
   }
 

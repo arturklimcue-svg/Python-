@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../services/ai_chat_store.dart';
 import '../services/ai_settings.dart';
 import '../services/chat_controller.dart';
 import '../services/opencode_server.dart';
 import '../theme.dart';
+import 'ai_chat_history_screen.dart';
 
 class AiChatScreen extends StatefulWidget {
   final int currentModule;
@@ -36,6 +38,14 @@ class _AiChatScreenState extends State<AiChatScreen> {
   AiServerStatus _status = AiServerStatus.checking;
   bool _autoSent = false;
 
+  /// id текущего сохранённого чата (null — новый, ещё не сохранён).
+  String? _chatId;
+
+  /// Сессия opencode текущего чата на сервере.
+  String? _sessionId;
+
+  Timer? _persistTimer;
+
   @override
   void initState() {
     super.initState();
@@ -50,23 +60,39 @@ class _AiChatScreenState extends State<AiChatScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
   }
 
-  void _startChat() {
-    _chat?.dispose();
+  /// Создаёт контроллер чата и подключает сохранение/обновление.
+  ChatController _createChat() {
     final chat = ChatController(
       server: OpenCodeServer(
         baseUrl: _settings.baseUrl,
         agent: _settings.agent,
       ),
+      initialSessionId: _sessionId,
     );
-    chat.onUpdate = () {
-      if (mounted) {
-        setState(() {});
-        _scrollToBottom();
-      }
+    chat.onSessionCreated = (id) {
+      _sessionId = id;
+      _persistCurrentChat();
     };
+    chat.onSessionReplaced = () {
+      _sessionId = null;
+    };
+    chat.onUpdate = _handleUpdate;
+    return chat;
+  }
+
+  void _handleUpdate() {
+    if (mounted) {
+      setState(() {});
+      _scrollToBottom();
+      _schedulePersist();
+    }
+  }
+
+  void _startChat() {
+    _chat?.dispose();
+    final chat = _createChat();
     _chat = chat;
     setState(() => _status = AiServerStatus.checking);
-    chat.start();
     chat.resolveAgents();
     _refreshStatus();
     if (widget.initialContext != null && !_autoSent) {
@@ -76,6 +102,110 @@ class _AiChatScreenState extends State<AiChatScreen> {
           chat.send(_contextMessage(widget.initialContext!));
         }
       });
+    }
+  }
+
+  /// Открывает сохранённый диалог: восстанавливаем сообщения и сессию,
+  /// чтобы продолжить разговор на сервере (а не заводить новый).
+  void _loadChat(SavedChat saved) {
+    _autoSent = true;
+    _chatId = saved.id;
+    _sessionId = saved.sessionId;
+    final chat = _createChat();
+    chat.transcript.messages.addAll(
+      saved.messages.map(
+        (m) => ChatMessage(role: m.role, text: m.text, timestamp: m.timestamp),
+      ),
+    );
+    _chat?.dispose();
+    _chat = chat;
+    setState(() => _status = AiServerStatus.checking);
+    chat.resolveAgents();
+    _refreshStatus();
+  }
+
+  void _newChat() {
+    _chatId = null;
+    _sessionId = null;
+    _autoSent = false;
+    _startChat();
+  }
+
+  /// Сохраняет текущий диалог в хранилище (создаёт или обновляет).
+  Future<void> _persistCurrentChat() async {
+    final chat = _chat;
+    if (chat == null || chat.transcript.messages.isEmpty) return;
+    final existing = await AiChatStore.load();
+    final id = _chatId ?? AiChatStore.newId();
+    _chatId = id;
+    final prev = existing.where((c) => c.id == id).toList();
+    final saved = SavedChat(
+      id: id,
+      sessionId: chat.sessionId,
+      title: SavedChat.makeTitle(chat.transcript.messages),
+      agent: _settings.agent,
+      createdAt: prev.isEmpty ? DateTime.now() : prev.first.createdAt,
+      updatedAt: DateTime.now(),
+      messages: chat.transcript.messages
+          .map(
+            (m) =>
+                ChatMessage(role: m.role, text: m.text, timestamp: m.timestamp),
+          )
+          .toList(),
+    );
+    final rest = existing.where((c) => c.id != id).toList()..add(saved);
+    await AiChatStore.save(rest);
+  }
+
+  void _schedulePersist() {
+    _persistTimer?.cancel();
+    _persistTimer = Timer(const Duration(milliseconds: 700), () {
+      if (mounted) _persistCurrentChat();
+    });
+  }
+
+  /// Удаляет сессию в opencode перед удалением чата из хранилища.
+  Future<void> _deleteChat(SavedChat chat) async {
+    final chatChat = _chat;
+    if (chat.id == _chatId && chatChat != null) {
+      await chatChat.removeSession();
+      return;
+    }
+    final sid = chat.sessionId;
+    if (sid == null) return;
+    final server = OpenCodeServer(baseUrl: _settings.baseUrl, agent: chat.agent);
+    try {
+      await server.deleteSession(sid);
+    } finally {
+      server.dispose();
+    }
+  }
+
+  Future<void> _openHistory() async {
+    await _persistCurrentChat();
+    if (!mounted) return;
+    final choice = await Navigator.of(context).push<ChatHistoryChoice>(
+      MaterialPageRoute(
+        builder: (_) => ChatHistoryScreen(
+          currentChatId: _chatId,
+          onDelete: _deleteChat,
+        ),
+      ),
+    );
+    if (!mounted) return;
+    if (choice != null) {
+      if (choice.newChat) {
+        _newChat();
+      } else if (choice.open != null) {
+        _loadChat(choice.open!);
+      }
+    } else {
+      // Вернулись назад. Если текущий чат удалили из истории — начинаем новый.
+      final currentId = _chatId;
+      if (currentId != null) {
+        final exists = (await AiChatStore.load()).any((c) => c.id == currentId);
+        if (!exists) _newChat();
+      }
     }
   }
 
@@ -181,6 +311,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
               const SizedBox(height: 16),
               FilledButton(
                 onPressed: () async {
+                  final oldBaseUrl = _settings.baseUrl;
                   _settings = _settings.copyWith(
                     baseUrl: urlCtrl.text.trim().isEmpty
                         ? OpenCodeServer.defaultBaseUrl
@@ -188,6 +319,13 @@ class _AiChatScreenState extends State<AiChatScreen> {
                     agent: agentCtrl.text.trim().isEmpty ? 'tutor' : agentCtrl.text.trim(),
                   );
                   await _settings.save();
+                  await _persistCurrentChat();
+                  if (oldBaseUrl != _settings.baseUrl) {
+                    // Сервер сменился — старая сессия больше не нужна.
+                    final oldChat = _chat;
+                    _sessionId = null;
+                    await oldChat?.removeSession();
+                  }
                   if (ctx.mounted) Navigator.of(ctx).pop();
                   _startChat();
                 },
@@ -202,6 +340,8 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
   @override
   void dispose() {
+    _persistTimer?.cancel();
+    _persistCurrentChat();
     _chat?.dispose();
     _controller.dispose();
     _scrollController.dispose();
@@ -235,6 +375,14 @@ class _AiChatScreenState extends State<AiChatScreen> {
           ],
         ),
         actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 4),
+            child: IconButton(
+              tooltip: 'Мои чаты',
+              onPressed: _openHistory,
+              icon: const Icon(Icons.history),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 4),
             child: IconButton(

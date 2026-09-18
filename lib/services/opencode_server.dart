@@ -106,6 +106,20 @@ class OpenCodeServer {
     }
   }
 
+  /// Удаляет сессию на сервере вместе со всей историей. Используется при
+  /// удалении чата, чтобы диалоги не копились в opencode.
+  Future<void> deleteSession(String sessionId) async {
+    try {
+      final req = await _client
+          .deleteUrl(Uri.parse('$baseUrl/session/$sessionId'))
+          .timeout(const Duration(seconds: 6));
+      final res = await req.close().timeout(const Duration(seconds: 6));
+      await res.drain<void>();
+    } catch (_) {
+      // Сервер недоступен или сессии уже нет — локально всё равно удаляем.
+    }
+  }
+
   /// Имена агентов, доступных на сервере. Пустой список — сервер недоступен
   /// или формат ответа не похож на ожидаемый.
   Future<List<String>> availableAgents() async {
