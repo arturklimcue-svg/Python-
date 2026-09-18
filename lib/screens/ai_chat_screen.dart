@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../services/ai_settings.dart';
 import '../services/chat_controller.dart';
@@ -417,24 +418,7 @@ class _CodeMessage extends StatelessWidget {
       children: parts.map((part) {
         if (part.trim().startsWith('python')) {
           final code = part.replaceFirst(RegExp(r'^python\s*\n?'), '');
-          return Container(
-            width: double.infinity,
-            margin: const EdgeInsets.symmetric(vertical: 6),
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppColors.codeBg,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              code.trim(),
-              style: const TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 13,
-                color: AppColors.codeText,
-                height: 1.4,
-              ),
-            ),
-          );
+          return _CodeBlock(code: code.trim());
         }
         if (part.trim().isNotEmpty) {
           return SelectableText(
@@ -448,6 +432,97 @@ class _CodeMessage extends StatelessWidget {
         }
         return const SizedBox.shrink();
       }).toList(),
+    );
+  }
+}
+
+class _CodeBlock extends StatefulWidget {
+  final String code;
+
+  const _CodeBlock({required this.code});
+
+  @override
+  State<_CodeBlock> createState() => _CodeBlockState();
+}
+
+class _CodeBlockState extends State<_CodeBlock> {
+  bool _copied = false;
+  Timer? _resetTimer;
+
+  Future<void> _copy() async {
+    await Clipboard.setData(ClipboardData(text: widget.code));
+    if (!mounted) return;
+    setState(() => _copied = true);
+    _resetTimer?.cancel();
+    _resetTimer = Timer(const Duration(seconds: 2), () {
+      if (mounted) setState(() => _copied = false);
+    });
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(
+          content: Text('Код скопирован'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+  }
+
+  @override
+  void dispose() {
+    _resetTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      decoration: BoxDecoration(
+        color: AppColors.codeBg,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Align(
+            alignment: Alignment.centerRight,
+            child: _copied
+                ? const Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Icon(Icons.check, size: 16, color: AppColors.success),
+                  )
+                : IconButton(
+                    tooltip: 'Скопировать',
+                    visualDensity: VisualDensity.compact,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    style: IconButton.styleFrom(
+                      minimumSize: const Size(34, 34),
+                      padding: const EdgeInsets.all(8),
+                    ),
+                    icon: const Icon(
+                      Icons.copy_rounded,
+                      size: 16,
+                      color: AppColors.textMuted,
+                    ),
+                    onPressed: _copy,
+                  ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+            child: SelectableText(
+              widget.code,
+              style: const TextStyle(
+                fontFamily: 'monospace',
+                fontSize: 13,
+                color: AppColors.codeText,
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
