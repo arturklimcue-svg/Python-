@@ -11,12 +11,13 @@ import 'dart:io';
 /// * `GET /event` — поток серверных событий (SSE): текст ответа приходит
 ///   частями в `message.part.updated`, завершение — `session.idle`.
 class OpenCodeServer {
-  OpenCodeServer({required this.baseUrl, this.agent = 'tutor'})
-    : _client = HttpClient()
+  OpenCodeServer({required this.baseUrl, String agent = 'tutor'})
+    : agent = agent,
+      _client = HttpClient()
           ..connectionTimeout = const Duration(seconds: 4);
 
   final String baseUrl;
-  final String agent;
+  String agent;
   final HttpClient _client;
 
   static const String defaultBaseUrl = 'http://127.0.0.1:4096';
@@ -102,6 +103,27 @@ class OpenCodeServer {
       await res.drain<void>();
     } catch (_) {
       // Не критично: сервер сам завершит ответ.
+    }
+  }
+
+  /// Имена агентов, доступных на сервере. Пустой список — сервер недоступен
+  /// или формат ответа не похож на ожидаемый.
+  Future<List<String>> availableAgents() async {
+    try {
+      final req = await _client
+          .getUrl(Uri.parse('$baseUrl/agent'))
+          .timeout(const Duration(seconds: 6));
+      final res = await req.close().timeout(const Duration(seconds: 6));
+      if (res.statusCode != 200) return const [];
+      final body = await res.transform(utf8.decoder).join();
+      final decoded = jsonDecode(body);
+      if (decoded is! List) return const [];
+      return decoded
+          .map((e) => e is Map<String, dynamic> ? e['name'] : null)
+          .whereType<String>()
+          .toList();
+    } catch (_) {
+      return const [];
     }
   }
 

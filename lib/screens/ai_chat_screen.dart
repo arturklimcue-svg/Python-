@@ -66,6 +66,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
     _chat = chat;
     setState(() => _status = AiServerStatus.checking);
     chat.start();
+    chat.resolveAgents();
     _refreshStatus();
     if (widget.initialContext != null && !_autoSent) {
       _autoSent = true;
@@ -246,6 +247,32 @@ class _AiChatScreenState extends State<AiChatScreen> {
       body: Column(
         children: [
           if (_status != AiServerStatus.online) _buildStatusBanner(),
+          if (chat?.agentNote != null)
+            Container(
+              width: double.infinity,
+              color: AppColors.accent.withValues(alpha: 0.08),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.info_outline,
+                    size: 15,
+                    color: AppColors.accent,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      chat!.agentNote!,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: AppColors.textDark,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           Expanded(
             child: chat == null
                 ? const Center(child: CircularProgressIndicator())

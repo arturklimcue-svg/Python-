@@ -198,8 +198,41 @@ class ChatController {
   String? _sessionId;
   StreamSubscription<Map<String, dynamic>>? _sub;
   Timer? _timeout;
+  bool _agentsResolved = false;
+  String? _agentNote;
 
   bool get isAwaiting => transcript.isAwaiting;
+
+  /// Заметка о том, что агент из настроек не найден и использован другой.
+  String? get agentNote => _agentNote;
+
+  /// Выбирает агента: настроенный, если он есть на сервере; иначе `general`;
+  /// иначе первый доступный; иначе оставляет настроенного.
+  static String chooseFallbackAgent(
+    String configured,
+    List<String> available,
+  ) {
+    if (available.contains(configured)) return configured;
+    if (available.contains('general')) return 'general';
+    return available.isNotEmpty ? available.first : configured;
+  }
+
+  /// Проверяет, что агент существует на сервере; при отсутствии переключается
+  /// на доступный. Вызывать можно без ожидания, безопасно.
+  Future<void> resolveAgents() => _ensureAgent();
+
+  Future<String> _ensureAgent() async {
+    if (_agentsResolved) return _server.agent;
+    _agentsResolved = true;
+    final configured = _server.agent;
+    final chosen = chooseFallbackAgent(configured, await _server.availableAgents());
+    if (chosen != configured) {
+      _agentNote = 'Агент «$configured» не найден на сервере, '
+          'использую «$chosen».';
+      _server.agent = chosen;
+    }
+    return chosen;
+  }
 
   void Function()? get onUpdate => transcript.onUpdate;
   set onUpdate(void Function()? f) => transcript.onUpdate = f;
@@ -250,6 +283,7 @@ class ChatController {
       if (_sessionId == null) {
         throw OpenCodeException('Сервер не создал сессию');
       }
+      await _ensureAgent();
       transcript.setUserMessageId(null);
       await _server.sendAsync(_sessionId!, '$kTutorSystemPrompt\n\n$trimmed');
     } catch (e) {

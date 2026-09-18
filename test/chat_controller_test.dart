@@ -157,4 +157,33 @@ void main() {
     final msg = ChatController.describeSendError(const SocketException('test'));
     expect(msg, contains('opencode serve'));
   });
+
+  group('chooseFallbackAgent', () {
+    test('настроенный агент есть на сервере — остаётся', () {
+      expect(
+        ChatController.chooseFallbackAgent('tutor', ['general', 'tutor']),
+        'tutor',
+      );
+    });
+
+    test('нет настроенного — берём general', () {
+      expect(
+        ChatController.chooseFallbackAgent('tutor', [
+          'build',
+          'explore',
+          'general',
+          'plan',
+        ]),
+        'general',
+      );
+    });
+
+    test('general тоже нет — первый доступный', () {
+      expect(ChatController.chooseFallbackAgent('tutor', ['build', 'plan']), 'build');
+    });
+
+    test('пустой список — настроенный не меняется', () {
+      expect(ChatController.chooseFallbackAgent('tutor', const []), 'tutor');
+    });
+  });
 }
