@@ -7,6 +7,7 @@ import '../services/ai_chat_store.dart';
 import '../services/ai_settings.dart';
 import '../services/chat_controller.dart';
 import '../services/opencode_server.dart';
+import '../services/termux_launcher.dart';
 import '../theme.dart';
 import 'ai_chat_history_screen.dart';
 
@@ -307,6 +308,36 @@ class _AiChatScreenState extends State<AiChatScreen> {
                       ),
                     ),
                 ],
+              ),
+              const SizedBox(height: 12),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: OutlinedButton.icon(
+                  onPressed: () async {
+                    final res = await TermuxLauncher.open();
+                    final message = res.status == 'ok'
+                        ? 'Termux открыт.\nЕсли сервер ещё не запущен — уже '
+                            'после установки он стартует сам (Termux:Boot). '
+                            'Если не стартует: запусти в Termux:\n'
+                            '  opencode serve'
+                        : res.message;
+                    final color = res.status == 'ok'
+                        ? AppColors.success
+                        : AppColors.warning;
+                    if (mounted) {
+                      ScaffoldMessenger.of(context)
+                        ..hideCurrentSnackBar()
+                        ..showSnackBar(
+                          SnackBar(
+                            content: Text(message),
+                            backgroundColor: color,
+                          ),
+                        );
+                    }
+                  },
+                  icon: const Icon(Icons.terminal, size: 18),
+                  label: const Text('Открыть Termux'),
+                ),
               ),
               const SizedBox(height: 16),
               FilledButton(

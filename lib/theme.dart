@@ -11,6 +11,7 @@ class AppColors {
   static const gold = Color(0xFFFFB300);
   static const streak = Color(0xFFFF6B35);
   static const success = Color(0xFF2EBD85);
+  static const warning = Color(0xFFF5A623);
   static const danger = Color(0xFFF0445C);
   static const codeBg = Color(0xFF201F33);
   static const codeText = Color(0xFFE6E4F2);
