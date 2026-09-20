@@ -28,9 +28,9 @@ class TermuxLauncher {
       });
       return started == true ? LaunchResult.ok() : LaunchResult.unableToOpen();
     } on MissingPluginException {
-      return const LaunchResult.error('Не удалось открыть Termux');
+      return LaunchResult.error('Не удалось открыть Termux');
     } on PlatformException {
-      return const LaunchResult.error('Не удалось открыть Termux');
+      return LaunchResult.error('Не удалось открыть Termux');
     }
   }
 }
