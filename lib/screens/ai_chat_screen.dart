@@ -314,14 +314,8 @@ class _AiChatScreenState extends State<AiChatScreen> {
                 alignment: Alignment.centerLeft,
                 child: OutlinedButton.icon(
                   onPressed: () async {
-                    final res = await TermuxLauncher.open();
-                    final message = res.status == 'ok'
-                        ? 'Termux открыт.\nЕсли сервер ещё не запущен — уже '
-                            'после установки он стартует сам (Termux:Boot). '
-                            'Если не стартует: запусти в Termux:\n'
-                            '  opencode serve'
-                        : res.message;
-                    final color = res.status == 'ok'
+                    final res = await TermuxLauncher.openAndRunBootstrap();
+                    final color = res.isOk
                         ? AppColors.success
                         : AppColors.warning;
                     if (mounted) {
@@ -329,8 +323,9 @@ class _AiChatScreenState extends State<AiChatScreen> {
                         ..hideCurrentSnackBar()
                         ..showSnackBar(
                           SnackBar(
-                            content: Text(message),
+                            content: Text(res.message),
                             backgroundColor: color,
+                            duration: const Duration(seconds: 12),
                           ),
                         );
                     }

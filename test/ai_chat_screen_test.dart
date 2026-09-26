@@ -7,14 +7,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  const channel = MethodChannel('plugins.flutter.io/android_intent_plus');
+  const channel = MethodChannel('dev.fluttercommunity.plus/android_intent');
   final messenger =
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
 
+  final calls = <MethodCall>[];
+
   setUp(() {
+    calls.clear();
     messenger.setMockMethodCallHandler(channel, (call) async {
-      if (call.method == 'resolve') return true;
-      if (call.method == 'startActivity') return true;
+      calls.add(call);
       return null;
     });
   });
@@ -47,7 +49,21 @@ void main() {
     expect(find.byType(SnackBar), findsOneWidget);
     expect(find.textContaining('Termux'), findsWidgets);
 
-    await tester.pump(const Duration(seconds: 5));
+    // Termux должен и открыться, и получить команды на установку opencode.
+    expect(
+      calls.map((c) => c.method),
+      containsAll(<String>['launch', 'sendService']),
+    );
+    final runCommand = calls.firstWhere((c) => c.method == 'sendService');
+    final args = Map<Object?, Object?>.from(runCommand.arguments as Map);
+    expect(args['action'], 'com.termux.RUN_COMMAND');
+    expect(args['componentName'], 'com.termux.app.RunCommandService');
+    final extras = Map<Object?, Object?>.from(args['arguments'] as Map);
+    expect(extras['com.termux.RUN_COMMAND_STDIN'],
+        contains('npm install -g opencode-ai'));
+    expect(extras['com.termux.RUN_COMMAND_BACKGROUND'], isFalse);
+
+    await tester.pump(const Duration(seconds: 13));
     await tester.pumpAndSettle();
   });
 }

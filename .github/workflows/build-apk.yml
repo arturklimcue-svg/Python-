@@ -26,6 +26,9 @@ jobs:
       - name: Create Android platform scaffolding
         run: flutter create --platforms android --org com.arturklimcue --project-name kodik .
 
+      - name: Allow Termux run-command capability
+        run: python3 tool/patch_android_manifest.py
+
       - name: Analyze code
         run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
