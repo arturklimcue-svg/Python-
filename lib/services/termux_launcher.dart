@@ -1,5 +1,13 @@
-import 'package:android_intent_plus/android_intent.dart';
 import 'package:flutter/services.dart';
+
+/// Канал, который регистрирует нативная часть `android_intent_plus`.
+///
+/// Обращаемся к нему напрямую, а не через класс `AndroidIntent`, потому что
+/// тот внутри возвращается молча, если `LocalPlatform().isAndroid == false` —
+/// на CI (ubuntu) это так, и канал бы вообще не вызывался. Формат аргументов
+/// ниже повторяет `_buildArguments()` из android_intent_plus.
+const MethodChannel _intentChannel =
+    MethodChannel('dev.fluttercommunity.plus/android_intent');
 
 /// Открывает Termux на устройстве — в нём живёт AI-сервер.
 ///
@@ -27,18 +35,18 @@ class TermuxLauncher {
   /// Открывает окно Termux (без выполнения команд).
   static Future<LaunchResult> open() async {
     try {
-      await AndroidIntent(
-        action: 'android.intent.action.MAIN',
-        category: 'android.intent.category.LAUNCHER',
-        package: androidPackage,
-        componentName: termuxActivity,
-      ).launch();
+      await _intentChannel.invokeMethod<void>('launch', {
+        'action': 'android.intent.action.MAIN',
+        'category': 'android.intent.category.LAUNCHER',
+        'package': androidPackage,
+        'componentName': termuxActivity,
+      });
       return LaunchResult.ok();
     } on PlatformException catch (e) {
       return LaunchResult.error(_describePlatformError(e));
     } on MissingPluginException {
       return LaunchResult.error(
-        'Канал android_intent_plus не найден. Пересобери приложение.',
+        'Плагин android_intent_plus не подключён. Пересобери приложение.',
       );
     }
   }
@@ -57,14 +65,14 @@ class TermuxLauncher {
   /// Просит Termux выполнить [bootstrapScript] в новой видимой сессии.
   static Future<LaunchResult> runBootstrap() async {
     try {
-      await AndroidIntent(
-        action: runCommandAction,
-        package: androidPackage,
-        componentName: runCommandService,
-        arrayArguments: const {
+      await _intentChannel.invokeMethod<void>('sendService', {
+        'action': runCommandAction,
+        'package': androidPackage,
+        'componentName': runCommandService,
+        'arrayArguments': const {
           'com.termux.RUN_COMMAND_ARGUMENTS': <String>[],
         },
-        arguments: {
+        'arguments': {
           'com.termux.RUN_COMMAND_PATH': bashPath,
           'com.termux.RUN_COMMAND_WORKDIR': r'$HOME',
           'com.termux.RUN_COMMAND_STDIN': bootstrapScript,
@@ -74,13 +82,13 @@ class TermuxLauncher {
           'com.termux.RUN_COMMAND_COMMAND_DESCRIPTION':
               'Установка opencode и запуск AI-сервера на 127.0.0.1:4096.',
         },
-      ).sendService();
+      });
       return LaunchResult.bootstrapSent();
     } on PlatformException catch (e) {
       return LaunchResult.error(_describeRunCommandError(e));
     } on MissingPluginException {
       return LaunchResult.error(
-        'Канал android_intent_plus не найден. Пересобери приложение.',
+        'Плагин android_intent_plus не подключён. Пересобери приложение.',
       );
     }
   }
